@@ -9,14 +9,14 @@ uint16_t touch::rescale_x(uint16_t x)
 	if( tmp > 16384 ){
 		// dodawac
 		uint16_t dx = tmp - 16384;
-		uint16_t div_p2 = 6*(dx / 10);
-		uint16_t div_p3 = 6*(dx / 100);
+		uint16_t div_p2 = 7*(dx / 10);
+		uint16_t div_p3 = 7*(dx / 100);
 		tmp += (div_p2 + div_p3);
 		}else{
 		// odejmowac
 		uint16_t dx = 16384 - tmp;
 		uint16_t div_p2 = 6*(dx / 10);
-		uint16_t div_p3 = 1*(dx / 100);
+		uint16_t div_p3 = 4*(dx / 100);
 		tmp -= (div_p2 + div_p3);
 	};
 
@@ -31,7 +31,7 @@ uint16_t touch::rescale_y(uint16_t y)
 		// dodawac
 		uint16_t dy = tmp - 16384;
 		uint16_t div_p2 = 2*(dy / 10);
-		uint16_t div_p3 = 1*(dy / 100);
+		uint16_t div_p3 = 8*(dy / 100);
 		tmp += (div_p2 + div_p3);
 		}else{
 		// odejmowac
@@ -46,12 +46,12 @@ uint16_t touch::rescale_y(uint16_t y)
 
 void touch::KeyPressed(void)
 {
-	while( ( Adc.current_X() + Adc.current_Y() ) < 0x0500 ){};
+	while( ( Adc.current_X() + Adc.current_Y() ) < 0x0420 ){};
 }
 
 bool touch::Press(void)
 {
-	if( Adc.current_X() + Adc.current_Y() < 0x0500 ){
+	if( Adc.current_X() + Adc.current_Y() < 0x0420 ){
 		return true;
 	};
 return false;
@@ -81,7 +81,7 @@ void touch::ReadCoordinates(void)
 	avy /= 5;
 	
 	
-	this->y = rescale_x(avx);
-	this->x = rescale_y(avy);
+	this->y = rescale_x(avy);
+	this->x = rescale_y(avx);
 	
 }

@@ -40,6 +40,20 @@ uint8_t lcd_KS0108::Status(uint8_t controller)
 
 void lcd_KS0108::Init(void)
 {
+
+	DDRG |=(1<<PG0);
+	PORTG |=(1<<PG0);
+	
+	DDRF |=(1<<PF7);
+	PORTF |=(1<<PF7);
+	
+	delay_ms(10);
+
+	WriteCommand( LCD_RESET, 0 );
+	WriteCommand( LCD_RESET, 1 );
+	
+	delay_ms(100);
+	
 	WriteCommand( LCD_ON, 0 );
 	WriteCommand( LCD_ON, 1 );
 	ClrScr();

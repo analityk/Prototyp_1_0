@@ -18,6 +18,7 @@ public:
 	bool Press(void);
 	void ReadCoordinates(void);
 	
+	//fuckup - kolizja linii spck z jend¹ z linii adc
 };
 
 extern touch Touch;

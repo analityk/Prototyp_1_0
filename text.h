@@ -29,6 +29,9 @@ class text{
 	void WriteChar(const char c);
 	void WriteString(const char* c);
 	void WriteLine(const char* c);
+	
+	void WriteBuffer(uint8_t* data);
+	
 	void NextLine(void);
 };
 

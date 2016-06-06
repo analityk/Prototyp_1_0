@@ -13,6 +13,8 @@
 #include <adc.h>
 #include <keyboard.h>
 #include <touch.h>
+#include <spi.h>
+#include <at45db321.h>
 
 void delay_milis(uint8_t milis){
 	startMillis();
@@ -43,10 +45,10 @@ void print(uint8_t* t, uint8_t x, uint8_t y){
 
 int main(void)
 {
-
-	Keyboard kb;
+	cli();
 	
-	kb.Init();
+	CLKPR = 0x80;
+	CLKPR = 0x00;
 	
 	Text.GoTo(7,0);
 	Text.WriteString("Siema");
@@ -54,45 +56,28 @@ int main(void)
 	Text.WriteString("zapraszam");
 	
 	Text.Refresh();
-	kb.DrawVisible();
 	
-	delay_ms(250);
-	delay_ms(250);
-	delay_ms(250);
-	delay_ms(250);
+	at45.readPage(0);
 	
-	Text.ClrScr();
-	
-	kb.LoadGroup(kb.KeysNavi);
-	kb.LoadGroup(kb.KeysNum);
-	kb.LoadGroup(kb.KeysBasic);
-	
-	kb.Draw();
+	Text.GoTo(3,1);
+	Text.WriteString( (char*) at45.page_buffer);
+	Text.Refresh();
 	
 	while(1){
 		
-		Touch.ReadCoordinates();
-		
-		convert(Touch.x / 4);
-		Text.GoTo(7,3);
-		Text.WriteChar('x');
-		print(cord, 9, 3);
-		
-		convert(Touch.y / 4);
-		Text.GoTo(7,4);
-		Text.WriteChar('y');
-		print(cord, 9, 4);
-		
-		uint8_t t = kb.Readkey();
-		
-		convert(t);
-		Text.GoTo(7,5);
-		Text.WriteChar('k');
-		print(cord, 9, 5);
-		
-		Text.Refresh();
-		kb.Draw();
-		
-		delay_ms(75);
-	}
-}
+		//Touch.ReadCoordinates();
+		//
+		//convert(Touch.x/4);
+		//Text.GoTo(7,3);
+		//Text.WriteChar('x');
+		//print(cord, 9, 3);
+		//
+		//convert( Touch.y/4 );
+		//Text.GoTo(7,4);
+		//Text.WriteChar('y');
+		//print(cord, 9, 4);
+		//
+		//Text.Refresh();	
+		//
+	};
+};

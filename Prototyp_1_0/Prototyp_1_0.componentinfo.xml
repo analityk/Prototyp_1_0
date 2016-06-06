@@ -26,13 +26,13 @@
 					<SourcePath></SourcePath>
 				</d4p1:anyType>
 				<d4p1:anyType i:type="FileInfo">
-					<AbsolutePath>C:/Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include\avr\iom128.h</AbsolutePath>
+					<AbsolutePath>C:/Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include\avr\iom1281.h</AbsolutePath>
 					<Attribute></Attribute>
 					<Category>header</Category>
 					<Condition>C</Condition>
-					<FileContentHash>w6TcdtnSFTUbj2H2rTwkDQ==</FileContentHash>
+					<FileContentHash>gp4852szaErIVeiiC0MhRg==</FileContentHash>
 					<FileVersion></FileVersion>
-					<Name>include/avr/iom128.h</Name>
+					<Name>include/avr/iom1281.h</Name>
 					<SelectString></SelectString>
 					<SourcePath></SourcePath>
 				</d4p1:anyType>
@@ -52,20 +52,20 @@
 					<Attribute>template</Attribute>
 					<Category>source</Category>
 					<Condition>C Exe</Condition>
-					<FileContentHash>tL1kaYK8doxTPOStypmeXg==</FileContentHash>
+					<FileContentHash>YXFphlh0CtZJU+ebktABgQ==</FileContentHash>
 					<FileVersion></FileVersion>
 					<Name>templates/main.cpp</Name>
 					<SelectString>Main file (.cpp)</SelectString>
 					<SourcePath></SourcePath>
 				</d4p1:anyType>
 				<d4p1:anyType i:type="FileInfo">
-					<AbsolutePath>C:/Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega128</AbsolutePath>
+					<AbsolutePath>C:/Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega1281</AbsolutePath>
 					<Attribute></Attribute>
 					<Category>libraryPrefix</Category>
 					<Condition>GCC</Condition>
 					<FileContentHash i:nil="true" />
 					<FileVersion></FileVersion>
-					<Name>gcc/dev/atmega128</Name>
+					<Name>gcc/dev/atmega1281</Name>
 					<SelectString></SelectString>
 					<SourcePath></SourcePath>
 				</d4p1:anyType>
@@ -74,7 +74,7 @@
 			<PackPath>C:/Program Files/Atmel/Studio/7.0/Packs/atmel/ATmega_DFP/1.0.90/Atmel.ATmega_DFP.pdsc</PackPath>
 			<PackVersion>1.0.90</PackVersion>
 			<PresentInProject>true</PresentInProject>
-			<ReferenceConditionId>ATmega128</ReferenceConditionId>
+			<ReferenceConditionId>ATmega1281</ReferenceConditionId>
 			<RteComponents xmlns:d4p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays">
 				<d4p1:string></d4p1:string>
 			</RteComponents>

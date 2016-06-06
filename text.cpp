@@ -80,6 +80,11 @@ void text::WriteString(const char* c)
 	};
 };
 
+void text::WriteBuffer(uint8_t* data)
+{
+
+}
+
 void text::NextLine(void)
 {
 	coursor_x = 0;

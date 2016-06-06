@@ -7,6 +7,7 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <font5x7.h>
+#include <delay.h>
 
 #define LCD_SET_X		0xB8
 #define	LCD_SET_Y		0x40

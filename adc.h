@@ -3,11 +3,11 @@
 
 #include <avr/io.h>
 #include <delay.h>
+#include <spi.h>
 
 class adc{
 public:
 	adc(){
-		//PRR = (0<<PRADC);
 		ADCSRA = (1<<ADEN)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);
 		ADMUX = 0;
 	};
