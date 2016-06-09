@@ -4,11 +4,15 @@
 #include <avr/io.h>
 #include <avr/pgmspace.h>
 #include <font5x7.h>
+#include <text.h>
 #include <array.h>
-#include <button.h>
 #include <touch.h>
 
-const uint8_t known_keys_cnt = 37;
+const uint8_t known_keys_cnt = 63;
+
+PROGMEM const uint8_t qwerty[] = {'q','w','e','r','t','y','u','i','o','p','a','s','d','f','g','h','j','k','l','z','x','c','v','b','n','m','0','1','2','3','4','5','6','7','8','9', 5};
+const uint8_t qwertyKeysGroupID = 5;
+const uint8_t qwertyKeys_cnt = 37;
 
 PROGMEM const uint8_t basicKeys[]	= { 43, 45, 42, 47, 46, 40, 41, 250, 61, 0 };
 const uint8_t basicKeysGroupID = 0;
@@ -57,7 +61,6 @@ class CKey{
 
 class Keyboard{
 	private:
-	button b;
 	uint8_t loaded;
 	public:
 
@@ -67,6 +70,7 @@ class Keyboard{
 	array< uint8_t > KeysLog;
 	array< uint8_t > KeysNum;
 	array< uint8_t > KeysNavi;
+	array< uint8_t > KeysQwerty;
 
 	Keyboard():
 	loaded(0),
@@ -75,7 +79,8 @@ class Keyboard{
 	KeysSin(sinKeys_cnt),
 	KeysLog(logKeys_cnt),
 	KeysNum(numKeys_cnt),
-	KeysNavi(naviKeys_cnt)
+	KeysNavi(naviKeys_cnt),
+	KeysQwerty(qwertyKeys_cnt)
 	{};
 	
 	void Init();

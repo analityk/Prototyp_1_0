@@ -6,7 +6,10 @@
  */ 
 
 #include <avr/io.h>
+#include <avr/interrupt.h>
+#include <sram.h>
 #include <array.h>
+#include <usart.h>
 #include <lcd.h>
 #include <text.h>
 #include <delay.h>
@@ -20,6 +23,15 @@ void delay_milis(uint8_t milis){
 	startMillis();
 	delay_ms(milis);
 	stopMillis();
+};
+
+void delay_s(uint8_t s){
+	for(uint8_t i=0; i<s; i++){
+		delay_ms(250);
+		delay_ms(250);
+		delay_ms(250);
+		delay_ms(250);
+	};
 };
 
 uint8_t cord[4];
@@ -42,6 +54,7 @@ void print(uint8_t* t, uint8_t x, uint8_t y){
 	};
 };
 
+//ISR(USART0_RX_vect){};
 
 int main(void)
 {
@@ -50,34 +63,43 @@ int main(void)
 	CLKPR = 0x80;
 	CLKPR = 0x00;
 	
-	Text.GoTo(7,0);
-	Text.WriteString("Siema");
-	Text.GoTo(6,7);
-	Text.WriteString("zapraszam");
+	//sei();
 	
-	Text.Refresh();
+	uint16_t ram_alloc[3];
 	
-	at45.readPage(0);
+	uint8_t tab[10];
 	
-	Text.GoTo(3,1);
-	Text.WriteString( (char*) at45.page_buffer);
-	Text.Refresh();
+	Serial.Enable();
 	
+	ram_alloc[0] = ram.get_mem(12);
+	ram_alloc[1] = ram.get_mem(12);
+	ram_alloc[2] = ram.get_mem(12);
+	
+	for(uint8_t i=0; i<10; i++){
+		tab[i] = i;
+	};
+	ram.write_block(ram_alloc[0], 0, 10, tab);
+	
+	for(uint8_t i=0; i<10; i++){
+		tab[i] = 2*i;
+	};
+	ram.write_block(ram_alloc[1], 0, 10, tab);
+	
+	for(uint8_t i=0; i<10; i++){
+		tab[i] = 3*i;
+	};
+	ram.write_block(ram_alloc[2], 0, 10, tab);
+	
+
 	while(1){
-		
-		//Touch.ReadCoordinates();
-		//
-		//convert(Touch.x/4);
-		//Text.GoTo(7,3);
-		//Text.WriteChar('x');
-		//print(cord, 9, 3);
-		//
-		//convert( Touch.y/4 );
-		//Text.GoTo(7,4);
-		//Text.WriteChar('y');
-		//print(cord, 9, 4);
-		//
-		//Text.Refresh();	
-		//
+		for(uint8_t j=0; j<3; j++){
+			
+			for(uint8_t i=0; i<10; i++){
+				tab[i] = ram.read_mem(ram_alloc[j], i);
+				Serial.write(tab[i]);
+			};
+			delay_s(2);
+		};
+		delay_s(10);
 	};
 };

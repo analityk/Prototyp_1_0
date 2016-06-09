@@ -3,6 +3,7 @@
 
 #include <avr/io.h>
 #include <lcd.h>
+#include <array.h>
 
 #define CHAR_CNT		22
 #define LINE_CNT		8
@@ -29,6 +30,7 @@ class text{
 	void WriteChar(const char c);
 	void WriteString(const char* c);
 	void WriteLine(const char* c);
+	void Write(array<char>& c);
 	
 	void WriteBuffer(uint8_t* data);
 	

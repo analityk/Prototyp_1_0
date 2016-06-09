@@ -55,6 +55,15 @@ void text::Draw(const char c)
 void text::WriteChar(const char c)
 {
 	inLine[coursor_y][coursor_x] = c;
+	coursor_x++;
+	if( coursor_x >= 21 ){
+		coursor_x = 0;
+		coursor_y++;
+		if( coursor_y >=8 ){
+			coursor_y = 0;
+			coursor_x = 0;
+		};
+	};
 };
 
 void text::WriteString(const char* c)
@@ -77,6 +86,15 @@ void text::WriteString(const char* c)
 				coursor_y = 7;
 			};
 		};
+	};
+};
+
+void text::Write(array<char>& c)
+{
+	for(uint8_t i=0; i<c.size(); i++){
+		if(c[i] == '\n')break;
+		if(c[i] == 0 )break;
+		WriteChar(c[i]);
 	};
 };
 

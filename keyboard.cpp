@@ -4,28 +4,64 @@ char empty_tab[] = {0,0,0,0};
 
 #define BYTES_PER_CTRL 12
 
-PROGMEM	const uint8_t keymem[] = {
+// klawiatura :
+// w pamięci uC - adres początku tego, co ma zostać wyświetlone np Keyboard = 0x0000;
+// w pamięci ram - kod klawisza, wspołrzędne tekstu, adres tekstu w pamięci ram
+//					uint8_t		uint8 uint8				uint16
+// obsługa - odczyt współrzędnych
+// przejście przez wszystkie elementy klawiatury i złapanie wciśniętego przycisku
+// wrzucenie do kolejki io kodu wybranego klawisza chyba, że to klawisz specjalny, np shift
 
-	/*	!	*/	33,	2,	0x21,	0,		0,		0,		4,		0, 0,0,0,0,
-	/*	%	*/	37,	2,	0x25,	0,		0,		0,		16,		0, 0,0,0,0,
-	/*	&	*/	38,	2,	0x26,	0,		0,		0,		28,		0, 0,0,0,0,
+PROGMEM	const uint8_t keymem[] = {
+	/*	q	*/	113,3,	113,	32,		0,		0,		4,		4,	0,0,0,0,
+	/*	w	*/	119,3,  119,	32,		0,		0,		14,		4,	0,0,0,0,
+	/*	e	*/	101,3,	101,	32,		0,		0,		24,		4,	0,0,0,0,
+	/*	r	*/	114,3,	114,	32,		0,		0,		34,		4,	0,0,0,0,
+	/*	t	*/	116,3,	116,	32,		0,		0,		44,		4,	0,0,0,0,
+	/*	y	*/	121,3,	121,	32,		0,		0,		54,		4,	0,0,0,0,
+	/*	u	*/	117,3,	117,	32,		0,		0,		64,		4,	0,0,0,0,
+	/*	i	*/	105,3,	105,	32,		0,		0,		74,		4,	0,0,0,0,
+	/*	o	*/	111,3,	111,	32,		0,		0,		84,	4,	0,0,0,0,
+	/*	p	*/	112,3,	112,	32,		0,		0,		94,	4,	0,0,0,0,
+	
+	/*	a	*/	97, 3,	97,		32,		0,		0,		10,		5,	0,0,0,0,
+	/*	s	*/	115,3,	115,	32,		0,		0,		20,		5,	0,0,0,0,
+	/*	d	*/	100,3,	100,	32,		0,		0,		30,		5,	0,0,0,0,
+	/*	f	*/	102,3,	102,	32,		0,		0,		40,		5,	0,0,0,0,
+	/*	g	*/	103,3,	103,	32,		0,		0,		50,		5,	0,0,0,0,
+	/*	h	*/	104,3,	104,	32,		0,		0,		60,		5,	0,0,0,0,
+	/*	j	*/	106,3,	106,	32,		0,		0,		70,		5,	0,0,0,0,
+	/*	k	*/	107,3,	107,	32,		0,		0,		80,		5,	0,0,0,0,
+	/*	l	*/	108,3,	108,	32,		0,		0,		90,	5,	0,0,0,0,
+	
+	/*	z	*/	122,3,	122,	32,		0,		0,		14,		6,	0,0,0,0,
+	/*	x	*/	120,3,	120,	32,		0,		0,		24,		6,	0,0,0,0,
+	/*	c	*/	99,	3,	99,		32,		0,		0,		34,		6,	0,0,0,0,
+	/*	v	*/	118,3,	118,	32,		0,		0,		44,		6,	0,0,0,0,
+	/*	b	*/	98,	3,	98,		32,		0,		0,		54,		6,	0,0,0,0,
+	/*	n	*/	110,3,	110,	32,		0,		0,		64,		6,	0,0,0,0,
+	/*	m	*/	109,3,	109,	32,		0,		0,		74,		6,	0,0,0,0,
+
+	/*	!	*/	33,	2,	0x21,	0,		0,		0,		4,		0,	0,0,0,0,
+	/*	%	*/	37,	2,	0x25,	0,		0,		0,		16,		0,	0,0,0,0,
+	/*	&	*/	38,	2,	0x26,	0,		0,		0,		28,		0,	0,0,0,0,
 	/*	(	*/	40,	2,	0x28,	0,		0,		0,		64,		0,	120, 144, 10, 35,
 	/*	)	*/	41,	2,	0x29,	0,		0,		0,		78,		0,	145, 172, 10, 35,
 	/*	*	*/	42,	2,	0x2A,	0,		0,		0,		28,		0,	50, 72, 10, 35,
 	/*	+	*/	43,	2,	0x2B,	0,		0,		0,		4,		0,	6,  28, 10, 35,
 	/*	-	*/	45,	2,	0x2D,	0,		0,		0,		16,		0,	29, 49, 10, 35,
 	/*	.	*/	46,	2,	0x2E,	0,		0,		0,		52,		0,	96, 119, 10, 35,
-	/*	/	*/	47,  2,	0x2F,	0,		0,		0,		40,		0,	73, 95, 10, 35,
-	/*	0	*/	48, 2,	0x30,	0,		0,		0,		4,		7,	6, 28, 210, 240,
-	/*	1	*/	49, 2,	0x31,	0,		0,		0,		16,		7,	29, 50, 210, 240,
-	/*	2	*/	50, 2,	0x32,	0,		0,		0,		28,		7,	51, 72, 213, 240,
+	/*	/	*/	47, 2,	0x2F,	0,		0,		0,		40,		0,	73, 95, 10, 35,
+	/*	0	*/	48, 2,	0x30,	0,		0,		0,		10,		7,	6, 28, 210, 240,
+	/*	1	*/	49, 2,	0x31,	0,		0,		0,		20,		7,	29, 50, 210, 240,
+	/*	2	*/	50, 2,	0x32,	0,		0,		0,		30,		7,	51, 72, 213, 240,
 	/*	3	*/	51, 2,	0x33,	0,		0,		0,		40,		7,	72, 96, 212, 239,
-	/*	4	*/	52, 2,	0x34,	0,		0,		0,		52,		7,	96, 118, 214, 240,
-	/*	5	*/	53, 2,	0x35,	0,		0,		0,		64,		7,	119, 142, 213, 240,
-	/*	6	*/	54, 2,	0x36,	0,		0,		0,		76,		7,	143, 166, 215, 241,
-	/*	7	*/	55, 2,	0x37,	0,		0,		0,		88,		7,	167, 191, 214, 241,
-	/*	8	*/	56, 2,	0x38,	0,		0,		0,		100,	7,	192, 215, 213, 242,
-	/*	9	*/	57, 2,	0x39,	0,		0,		0,		112,	7,	216, 241, 215, 243,
+	/*	4	*/	52, 2,	0x34,	0,		0,		0,		50,		7,	96, 118, 214, 240,
+	/*	5	*/	53, 2,	0x35,	0,		0,		0,		60,		7,	119, 142, 213, 240,
+	/*	6	*/	54, 2,	0x36,	0,		0,		0,		70,		7,	143, 166, 215, 241,
+	/*	7	*/	55, 2,	0x37,	0,		0,		0,		80,		7,	167, 191, 214, 241,
+	/*	8	*/	56, 2,	0x38,	0,		0,		0,		90,		7,	192, 215, 213, 242,
+	/*	9	*/	57, 2,	0x39,	0,		0,		0,		100,		7,	216, 241, 215, 243,
 	/*	=	*/	61, 2,	0x3D,	0,		0,		0,		116,	0,	222, 251, 10, 40,
 	/*	>>	*/	130, 2,	0x80,	0,		0,		0,		0,		2,	0, 18, 66, 90,
 	/*	>>	*/	131, 2,	0x80,	0,		0,		0,		0,		3,	0, 18, 91, 123,
@@ -91,32 +127,39 @@ void Keyboard::Init(void)
 	for( uint8_t i=0; i<KeysNavi.size(); i++ ){
 		KeysNavi[i] = pgm_read_byte(naviKeys + i);
 	};
+	
+	for( uint8_t i=0; i<KeysQwerty.size(); i++ ){
+		KeysQwerty[i] = pgm_read_byte(qwerty + i);
+	};
+	
 
 };
 
 void Keyboard::Draw()
-{
-	
-	for( uint8_t i=0; i<Keys.size(); i++){
-		if( Keys[i].visible != true ){
-			b.Draw( empty_tab, Point.Set( Keys[i].x_point, Keys[i].y_point) );
+{	
+	for( uint8_t i=0; i<Keys.size(); i++ ){
+		uint8_t x = 0;
+		uint8_t y = 0;
+		bool vis = false;
+		
+		x = Keys[i].x_point;
+		y = Keys[i].y_point;
+		vis = Keys[i].visible;
+		
+		if( vis ){
+			Lcd_KS0108.GoToXY(x,y);
+			
+			uint8_t z = Keys[i].funcName[0] - 32;
+			for(uint8_t i=0; i<5; i++){
+				Lcd_KS0108.WriteData( pgm_read_byte( font5x7 + (z*5) + i ));
+			};
+			
+			Lcd_KS0108.WriteData(0x00);
 		};
+		
 	};
-	
-	for( uint8_t i=0; i<Keys.size(); i++){
-		if( Keys[i].visible == true ){
-			b.Draw( Keys[i].funcName, Point.Set( Keys[i].x_point, Keys[i].y_point) );
-		};
-	};
-};
 
-void Keyboard::DrawVisible()
-{
-	for( uint8_t i=0; i<Keys.size(); i++){
-		if( Keys[i].visible == true ){
-			b.Draw( Keys[i].funcName, Point.Set( Keys[i].x_point, Keys[i].y_point) );
-		};
-	};
+
 };
 
 void Keyboard::LoadGroup( array< uint8_t >& group )
@@ -222,6 +265,19 @@ uint8_t Keyboard::Readkey(void)
 			
 			if( (x >= lx) && (x < hx) && (y>=ly) && (y<hy) ){
 				return KeysNavi[i];
+			};
+		};
+	};
+	
+	if( loaded & (1 << qwertyKeysGroupID) ){	// Qwerty
+		for( uint8_t i=0; i<KeysQwerty.size() - 1; i++ ){
+			uint8_t lx = Keys[ KeysQwerty[i] ].low_x;
+			uint8_t ly = Keys[ KeysQwerty[i] ].low_y;
+			uint8_t hx = Keys[ KeysQwerty[i] ].high_x;
+			uint8_t hy = Keys[ KeysQwerty[i] ].high_y;
+			
+			if( (x >= lx) && (x < hx) && (y>=ly) && (y<hy) ){
+				return KeysQwerty[i];
 			};
 		};
 	};

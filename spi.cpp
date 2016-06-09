@@ -10,6 +10,8 @@ SPI::SPI()
 	SPCR = (0<<SPIE)|(1<<SPE)|(0<<DORD)|(1<<MSTR)|(0<<CPOL)|(0<CPHA);
 	SPSR |=(1<<SPI2X);
 	
+	DISABLE_SPCK;
+	
 }
 
 uint8_t SPI::transfer(uint8_t znak)
