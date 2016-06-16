@@ -65,41 +65,44 @@ int main(void)
 	
 	//sei();
 	
-	uint16_t ram_alloc[3];
-	
-	uint8_t tab[10];
-	
 	Serial.Enable();
 	
-	ram_alloc[0] = ram.get_mem(12);
-	ram_alloc[1] = ram.get_mem(12);
-	ram_alloc[2] = ram.get_mem(12);
+	//at45.WriteText( 0, "q w e r t y u i o p\n" );
+	//at45.WriteText( 32, "a s d f g h j k l\n" );
+	//at45.WriteText( 64, "z x c v b n m\n" );
+	//at45.WriteText( 96, "1 2 3 4 5 6 7 8 9 0\n" );
+	//at45.WriteText( 128, "Q W E R T Y U I O P\n" );
+	//at45.WriteText( 160, "A S D F G H J K L\n" );
+	//at45.WriteText( 192, "Z X C V B N M\n" );
+	//at45.WriteText( 224, "1 2 3 4 5 6 7 8 9 0\n" );
+	//at45.WriteText( 256,"14254617\n");
+	//
+	//at45.programPage(0);
 	
-	for(uint8_t i=0; i<10; i++){
-		tab[i] = i;
-	};
-	ram.write_block(ram_alloc[0], 0, 10, tab);
+	at45.readPage(0);
 	
-	for(uint8_t i=0; i<10; i++){
-		tab[i] = 2*i;
-	};
-	ram.write_block(ram_alloc[1], 0, 10, tab);
+	ram_grip at45_grip = ram.get_mem(1056);
 	
-	for(uint8_t i=0; i<10; i++){
-		tab[i] = 3*i;
-	};
-	ram.write_block(ram_alloc[2], 0, 10, tab);
+	ram.write_block(at45_grip, 0, 528, at45.page_buffer);
 	
+	Text.ClrScr();
 
-	while(1){
-		for(uint8_t j=0; j<3; j++){
-			
-			for(uint8_t i=0; i<10; i++){
-				tab[i] = ram.read_mem(ram_alloc[j], i);
-				Serial.write(tab[i]);
-			};
-			delay_s(2);
-		};
-		delay_s(10);
+	for( uint8_t i=0; i<4; i++){
+		uint8_t x = (uint8_t) ram.readByte(at45_grip, 256 + (i*2)) - 48;
+		uint8_t y = (uint8_t) ram.readByte(at45_grip, 256 + (i*2) + 1) - 48;
+		Text.GoTo(x,y);
+		
+		uint8_t t[33];
+		
+		ram.read_block(at45_grip, i*32, 32 , t);
+		
+		Text.WriteString( ( char* ) t );
 	};
-};
+	
+	Text.Refresh();
+	
+	
+	while(1){
+		
+	};
+}; 

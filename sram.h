@@ -2,7 +2,10 @@
 #define sram_h__
 
 #include <avr/io.h>
-#include <array.h>
+#include <usart.h>
+#include <text.h>
+#include <delay.h>
+
 
 #define RW	PB7
 #define SET_RW	{ PORTB |= (1<<RW); }
@@ -42,6 +45,15 @@
 #define RAM_WRITE	{ CLR_CE_1; SET_CE_2; SET_OE; CLR_RW; DATA_PORT_OUTPUT;	}
 #define RAM_STANDBY	{ SET_CE_1;	SET_CE_2; SET_OE; SET_RW; DATA_PORT_DISABLE; }
 
+#define BANKS_CNT	2
+
+#define BANK_A	0
+#define BANK_B	1
+
+#define GRIP_FACTOR	0x4000
+#define GRIP_FAIL	0
+
+typedef uint16_t ram_grip;
 
 typedef struct {
 	uint16_t start;	// adres pocz¹tku danych dla tej konkretnej alokacji
@@ -65,43 +77,45 @@ const uint16_t mem_size = 0xFFFF;
 // max_tsrs_cnt x 5 - iloœæ pamiêci zarezerwowana na potrzeby zapamiêtania gdzie i co jest
 // ta pamiêæ leci z góry co 5 bajtów
 
-// sum_of_all_allocate_memory - to jest liczba rosn¹ca od zera i oznacza ile bajtów pamiêci zosta³o przydzielonych
+// all_alloc_mem_a - to jest liczba rosn¹ca od zera i oznacza ile bajtów pamiêci zosta³o przydzielonych
 // userowi, zatem
 
 // nie mo¿na przydzieliæ tak du¿o pamiêci, ¿eby przydzielony obszar móg³ nadpisaæ pamiêæ na potrzeby _tsrs
 // avaiable_mem zwraca liczê bajtów, która mo¿e jeszcze zostaæ zaalokowana w jednym bloku i oznacza
-// 0xFFFF - (5 x max_tsrs_numb + 1) - sum_of_all_allocate_memory;
-
-class RAM{	
+// 0xFFFF - (5 x max_tsrs_cnt + 1) - all_alloc_mem_a;
+class RAM {	
 private:
+	uint8_t _bank;
 	_tsRS tsrs;
-	uint16_t max_tsrs_cnt;
-	uint16_t sum_of_all_allocate_memory;
-	//void save_tsRS(void);
+	uint16_t max_tsrs_cnt[2];
+	uint16_t all_alloc_mem[2];
+	
+	void WriteByte(uint16_t adr, uint8_t data);
+	uint8_t ReadByte(uint16_t adr);
+	
+	void setBank(uint8_t bank);
+	
 public:
 	RAM();
 	
 	bool offset_error;
 	bool addr_error;
+
+	void clr_err(void);
 	
-	uint16_t avaiable_mem(void);
-	uint16_t get_mem(uint16_t cnt_bytes);
-	uint16_t get_mem(uint16_t cnt_bytes, uint8_t type_size);
-	uint8_t read_mem(uint16_t adr, uint16_t offset);
-	void read_block(uint16_t adr, uint16_t offset, uint16_t cnt_to_copy, uint8_t* where);
+	//uint16_t avaiable_mem(void);
+	ram_grip get_mem(uint16_t cnt_bytes);
 	
-	void write_block(uint16_t adr, uint16_t offset, uint16_t cnt_to_copy, uint8_t* from);
+	//uint16_t get_mem(uint16_t cnt_bytes, uint8_t type_size);
 	
-	void WriteByte(uint16_t adr, uint8_t data);
-	uint8_t ReadByte(uint16_t adr);
+	uint8_t readByte(ram_grip adr, uint16_t offset);
+	
+	void read_block(ram_grip adr, uint16_t offset, uint16_t cnt_to_copy, uint8_t* where);
+	
+	void write_block(ram_grip adr, uint16_t offset, uint16_t cnt_to_copy, uint8_t* from);
 	
 };
 
 extern RAM ram;
-
-//  2048 x 64
-//  1024 x 128
-//   512 x 256
-//   256 x 512
 
 #endif // sram_h__
