@@ -2,9 +2,7 @@
 #define sram_h__
 
 #include <avr/io.h>
-#include <usart.h>
-#include <text.h>
-#include <delay.h>
+#include <array.h>
 
 
 #define RW	PB7
@@ -83,6 +81,8 @@ const uint16_t mem_size = 0xFFFF;
 // nie mo¿na przydzieliæ tak du¿o pamiêci, ¿eby przydzielony obszar móg³ nadpisaæ pamiêæ na potrzeby _tsrs
 // avaiable_mem zwraca liczê bajtów, która mo¿e jeszcze zostaæ zaalokowana w jednym bloku i oznacza
 // 0xFFFF - (5 x max_tsrs_cnt + 1) - all_alloc_mem_a;
+
+
 class RAM {	
 private:
 	uint8_t _bank;
@@ -90,10 +90,11 @@ private:
 	uint16_t max_tsrs_cnt[2];
 	uint16_t all_alloc_mem[2];
 	
-	void WriteByte(uint16_t adr, uint8_t data);
 	uint8_t ReadByte(uint16_t adr);
 	
 	void setBank(uint8_t bank);
+	
+	void get_mem_struct(ram_grip grip, _tsRS* p);
 	
 public:
 	RAM();
@@ -107,6 +108,10 @@ public:
 	ram_grip get_mem(uint16_t cnt_bytes);
 	
 	//uint16_t get_mem(uint16_t cnt_bytes, uint8_t type_size);
+	
+	void free_mem(ram_grip grip);
+	
+	void WriteByte(uint16_t adr, uint8_t data);
 	
 	uint8_t readByte(ram_grip adr, uint16_t offset);
 	

@@ -17,7 +17,7 @@ public:
 		data = (T*)malloc(sizeof(T)*tsize);
 		for(uint8_t i=0; i<tsize; i++){
 			data[i] = T();
-		}
+		};
 		rozm = tsize;
 		poz = 0;
 		_full = false;

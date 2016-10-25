@@ -9,6 +9,7 @@
 #include <avr/interrupt.h>
 #include <sram.h>
 #include <array.h>
+#include <ram_alloc.h>
 #include <usart.h>
 #include <lcd.h>
 #include <text.h>
@@ -46,6 +47,7 @@ void convert(uint16_t t){
 		div /= 10;
 	};
 };
+
 
 void print(uint8_t* t, uint8_t x, uint8_t y){
 	for(uint8_t i=4; i>0; i--){
@@ -92,7 +94,7 @@ int main(void)
 		uint8_t y = (uint8_t) ram.readByte(at45_grip, 256 + (i*2) + 1) - 48;
 		Text.GoTo(x,y);
 		
-		uint8_t t[33];
+		uint8_t t[32];
 		
 		ram.read_block(at45_grip, i*32, 32 , t);
 		

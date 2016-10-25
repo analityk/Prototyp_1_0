@@ -20,6 +20,23 @@ void RAM::setBank(uint8_t bank)
 	_bank = bank;
 };
 
+void RAM::get_mem_struct(ram_grip grip, _tsRS* p)
+{
+	uint16_t addr = mem_size - ( size_of_trst * ( grip - ( GRIP_FACTOR * _bank ) ) );
+/*	*/
+	uint8_t t[5];
+	t[0] = ReadByte( addr + 0 );
+	t[1] = ReadByte( addr + 1 );
+	t[2] = ReadByte( addr + 2 );
+	t[3] = ReadByte( addr + 3 );
+	t[4] = ReadByte( addr + 4 );
+	
+	p->cnt = (t[1] << 8) | t[0];
+	p->start = (t[3] << 8) | t[2];
+	p->type_size = t[4];
+
+};
+
  RAM::RAM()
 {
 	_bank = BANK_A;
@@ -82,7 +99,7 @@ ram_grip RAM::get_mem(uint16_t cnt_bytes)
 		WriteByte(addr + 3, (uint8_t)(tsrs.start >> 8) );
 		WriteByte(addr + 4, (uint8_t)(tsrs.type_size) );
 		
-		max_tsrs_cnt[_bank] = (0x4000 * _bank) + 1;
+		max_tsrs_cnt[_bank] = (GRIP_FACTOR * _bank) + 1;
 		
 	};
 	
@@ -128,33 +145,28 @@ ram_grip RAM::get_mem(uint16_t cnt_bytes)
 	return 0;
 }
 
-uint8_t RAM::readByte(ram_grip adr, uint16_t offset)
+void RAM::free_mem(ram_grip grip)
 {
-	setBank( adr / GRIP_FACTOR );
+	setBank( grip / GRIP_FACTOR );
+	_tsRS t;
+	get_mem_struct(grip, &t);
 	
-	uint16_t addr = mem_size - ( size_of_trst * ( adr - ( GRIP_FACTOR * _bank ) ) );
-/*	*/
-	uint8_t t[5];
-	t[0] = ReadByte( addr + 0 );
-	t[1] = ReadByte( addr + 1 );
-	t[2] = ReadByte( addr + 2 );
-	t[3] = ReadByte( addr + 3 );
-	t[4] = ReadByte( addr + 4 );
+	t.type_size = 0;
 	
+}
+
+uint8_t RAM::readByte(ram_grip grip, uint16_t offset)
+{
+	setBank( grip / GRIP_FACTOR );
 	_tsRS tmp;
-	
-	tmp.cnt		= (t[1] << 8) | t[0];
-	tmp.start	= (t[3] << 8) | t[2];
-	tmp.type_size = t[4];
+	get_mem_struct(grip, &tmp);
 	
 	if( offset > tmp.cnt ){
 		offset_error = true;
 		return 0;
 	};
 	
-	addr = tmp.start + offset;
-	
-	uint8_t r = ReadByte(addr);
+	uint8_t r = ReadByte(tmp.start + offset);
 	return r;
 	
 };
@@ -162,28 +174,15 @@ uint8_t RAM::readByte(ram_grip adr, uint16_t offset)
 void RAM::read_block(ram_grip adr, uint16_t offset, uint16_t cnt_to_copy, uint8_t* where)
 {
 	setBank( adr / GRIP_FACTOR );
-	
-	uint16_t addr = mem_size - ( size_of_trst * ( adr - ( GRIP_FACTOR * _bank ) ) );
-	/*	*/
-	uint8_t t[5];
-	t[0] = ReadByte( addr + 0 );
-	t[1] = ReadByte( addr + 1 );
-	t[2] = ReadByte( addr + 2 );
-	t[3] = ReadByte( addr + 3 );
-	t[4] = ReadByte( addr + 4 );
-	
 	_tsRS tmp;
-	
-	tmp.cnt		= (t[1] << 8) | t[0];
-	tmp.start	= (t[3] << 8) | t[2];
-	tmp.type_size = t[4];
+	get_mem_struct(adr, &tmp);
 	
 	if( offset > tmp.cnt ){
 		offset_error = true;
 		return;
 	};
 	
-	addr = tmp.start + offset;
+	uint16_t addr = tmp.start + offset;
 	
 	CLR_OE;
 	CLR_CE_1;
@@ -199,27 +198,13 @@ void RAM::read_block(ram_grip adr, uint16_t offset, uint16_t cnt_to_copy, uint8_
 		where[i] = PIND;
 	};
 	RAM_STANDBY;
-}
+};
 
 void RAM::write_block(ram_grip adr, uint16_t offset, uint16_t cnt_to_copy, uint8_t* from)
 {
 	setBank( adr / GRIP_FACTOR );
-	
-	uint16_t addr = mem_size - ( size_of_trst * ( adr - ( GRIP_FACTOR * _bank ) ) );
-	
-/*	*/
-	uint8_t t[5];
-	t[0] = ReadByte( addr + 0 );
-	t[1] = ReadByte( addr + 1 );
-	t[2] = ReadByte( addr + 2 );
-	t[3] = ReadByte( addr + 3 );
-	t[4] = ReadByte( addr + 4 );
-		
 	_tsRS tmp;
-		
-	tmp.cnt		= (t[1] << 8) | t[0];
-	tmp.start	= (t[3] << 8) | t[2];
-	tmp.type_size = t[4];
+	get_mem_struct(adr, &tmp);
 	
 	if( tmp.cnt < (offset + cnt_to_copy) ){
 		offset_error = true;
@@ -278,5 +263,6 @@ uint8_t RAM::ReadByte(ram_grip adr)
 	RAM_STANDBY;
 	return t;
 };
+
 
 RAM ram;
