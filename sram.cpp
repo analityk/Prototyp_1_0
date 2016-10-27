@@ -145,6 +145,26 @@ ram_grip RAM::get_mem(uint16_t cnt_bytes)
 	return 0;
 }
 
+void RAM::release(ram_grip grip)
+{
+	//setBank( grip / GRIP_FACTOR );
+	//
+	//_tsRS tmp;
+	//
+	//uint8_t t[5];
+	//
+	//t[0] = ReadByte( addr + 0 );
+	//t[1] = ReadByte( addr + 1 );
+	//t[2] = ReadByte( addr + 2 );
+	//t[3] = ReadByte( addr + 3 );
+	//t[4] = ReadByte( addr + 4 );
+			//
+	//tmp.cnt		= (t[1] << 8) | t[0];
+	//tmp.start	= (t[3] << 8) | t[2];
+	//tmp.type_size = t[4];
+	//
+}
+
 void RAM::free_mem(ram_grip grip)
 {
 	setBank( grip / GRIP_FACTOR );

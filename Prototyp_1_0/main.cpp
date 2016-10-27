@@ -35,7 +35,7 @@ void delay_s(uint8_t s){
 	};
 };
 
-uint8_t cord[4];
+uint8_t cord[5];
 
 void convert(uint16_t t){
 	uint16_t a = t;
@@ -46,6 +46,16 @@ void convert(uint16_t t){
 		cord[i-1] += 48;
 		div /= 10;
 	};
+	uint8_t tmp = cord[0];
+	cord[0] = cord[3];
+	cord[3] = tmp;
+	
+	tmp = cord[2];
+	cord[2] = cord[1];
+	cord[1] = tmp;
+	
+	
+	cord[4] = '\n';
 };
 
 
@@ -54,6 +64,15 @@ void print(uint8_t* t, uint8_t x, uint8_t y){
 		Text.GoTo(x++, y);
 		Text.WriteChar(cord[i-1]);
 	};
+};
+
+typedef struct{
+	uint8_t ut;
+	char uc[10];
+}Ttest;
+
+void delay(uint32_t volatile t){
+	while(t--){};
 };
 
 //ISR(USART0_RX_vect){};
@@ -81,25 +100,55 @@ int main(void)
 	//
 	//at45.programPage(0);
 	
-	at45.readPage(0);
+	Ttest test;
+	test.uc[0] = 'a';
+	test.uc[1] = 'b';
+	test.uc[2] = 'c';
+	test.uc[3] = 'd';
+	test.uc[4] = 'e';
+	test.uc[5] = 'f';
+	test.ut = 12;
 	
-	ram_grip at45_grip = ram.get_mem(1056);
+	ram_alloc< Ttest >lista(10);
+	lista.push(test);
 	
-	ram.write_block(at45_grip, 0, 528, at45.page_buffer);
+	//at45.readPage(0);
+	//
+	//ram_grip at45_grip = ram.get_mem(1056);
+	//
+	//ram.write_block(at45_grip, 0, 528, at45.page_buffer);
+	//
+	//Text.ClrScr();
+//
+	//for( uint8_t i=0; i<4; i++){
+		//uint8_t x = (uint8_t) ram.readByte(at45_grip, 256 + (i*2)) - 48;
+		//uint8_t y = (uint8_t) ram.readByte(at45_grip, 256 + (i*2) + 1) - 48;
+		//Text.GoTo(x,y);
+		//
+		//uint8_t t[32];
+		//
+		//ram.read_block(at45_grip, i*32, 32 , t);
+		//
+		//Text.WriteString( ( char* ) t );
+	//};
+	
+	//Text.Refresh();
+	//delay(0xFFFFF);
 	
 	Text.ClrScr();
-
-	for( uint8_t i=0; i<4; i++){
-		uint8_t x = (uint8_t) ram.readByte(at45_grip, 256 + (i*2)) - 48;
-		uint8_t y = (uint8_t) ram.readByte(at45_grip, 256 + (i*2) + 1) - 48;
-		Text.GoTo(x,y);
-		
-		uint8_t t[32];
-		
-		ram.read_block(at45_grip, i*32, 32 , t);
-		
-		Text.WriteString( ( char* ) t );
+	if( lista.at(0).ut > 0 ){
+		Text.WriteString( "cos tu jest" );
+	}else{
+		Text.WriteString( "cos tu bylo" );
 	};
+	
+	Text.GoTo(0,1);
+	Text.WriteString( (char*) lista.at(0).uc );
+	Text.GoTo(0,2);
+	
+	
+	convert(lista.at(0).ut);
+	Text.WriteBuffer( cord );
 	
 	Text.Refresh();
 	

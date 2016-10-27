@@ -107,7 +107,7 @@ public:
 	//uint16_t avaiable_mem(void);
 	ram_grip get_mem(uint16_t cnt_bytes);
 	
-	//uint16_t get_mem(uint16_t cnt_bytes, uint8_t type_size);
+	void release(ram_grip grip);
 	
 	void free_mem(ram_grip grip);
 	

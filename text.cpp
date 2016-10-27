@@ -100,8 +100,11 @@ void text::Write(array<char>& c)
 
 void text::WriteBuffer(uint8_t* data)
 {
-
-}
+	for( uint8_t i = 0; i < 255; i++ ){
+		if(*data == '\n')break;
+		WriteChar(*data++);
+	};
+};
 
 void text::NextLine(void)
 {

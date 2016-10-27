@@ -8,22 +8,63 @@ template< class T >
 class ram_alloc {
 	
 private:
+
+	union {
+		T ut;
+		uint8_t ub[sizeof(T)];
+	}UCastUnion;
+
+	T t;
+	
 	ram_grip grip;
 	uint16_t _size_T;
 	uint16_t _size;
 	uint16_t _cnt;
+	
+	uint16_t _poz;
+	
 	
 public:
 	ram_alloc( uint16_t  cnt ){
 		_size_T = sizeof( T );
 		_size = _size_T * cnt;
 		grip = ram.get_mem( _size );
-		ram.write_block( grip, 0, _size, (uint8_t*) 0 );
+		_poz = 0;
 	};
 	
-	T operator[] (uint16_t i){
-		T t;
+	void push(T t){
+		if( _poz == _cnt ){
+			return;
+		};
+		UCastUnion.ut = t;
+		ram.write_block(grip, _poz, _size_T, UCastUnion.ub );
+		_poz++;
+	};
+	
+	void pop(void){
+		if( _poz == 0 ){
+			return;
+		};
+		_poz--;
+		ram.write_block(grip, _poz, _size_T, 0);
+	};
+	
+	bool release(void){
+		return false;
+	};
+	
+	T at(uint16_t i) {
+		if( i >= _poz ){
+			for( uint16_t a=0; a<_size_T; a++ ){
+				UCastUnion.ub[a] = 0;
+			};
+			return UCastUnion.ut;
+		};
+		ram.read_block(grip, i*_size_T, sizeof( T ), UCastUnion.ub);
 		
+		t = UCastUnion.ut;
+		
+		return t;
 	}
 	
 };
