@@ -183,4 +183,16 @@ void lcd_KS0108::ClrPixel(uint8_t x, uint8_t y)
 	WriteData(tmp);
 }
 
+void lcd_KS0108::LightON(void)
+{
+	PORTG |=(1<<0);
+	DDRG  |=(1<<0);
+};
+
+void lcd_KS0108::LightOFF(void)
+{
+	DDRG  |=(1<<0);
+	PORTG &=~(1<<0);
+};
+
 lcd_KS0108 Lcd_KS0108;

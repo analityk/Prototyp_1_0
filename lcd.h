@@ -77,8 +77,11 @@ class lcd_KS0108{
 	private:
 	uint8_t axis_x,axis_y;
 	uint8_t controller;
+	
 	public:
-	lcd_KS0108():axis_x(0), axis_y(0), controller(0){
+	uint8_t coursor;
+	
+	lcd_KS0108():axis_x(0), axis_y(0), controller(0), coursor(0x7F){
 		LCD_DATA_DDR = 0xFF;
 		LCD_DATA_PORT = 0x00;
 		CLR_LCD_RS;
@@ -98,6 +101,10 @@ class lcd_KS0108{
 	void ClrScr(void);
 	void SetPixel(uint8_t x, uint8_t y);
 	void ClrPixel(uint8_t x, uint8_t y);
+	
+	static void LightON(void);
+	static void LightOFF(void);
+	
 };
 
 extern lcd_KS0108 Lcd_KS0108;

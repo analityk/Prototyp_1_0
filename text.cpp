@@ -1,24 +1,8 @@
 ﻿#include <text.h>
 
-void text::Zero(void)
+void text::SetSpaces(uint8_t s)
 {
-	for(uint8_t i=0;  i < 8; i++){
-		Lcd_KS0108.GoToXY(0,i);
-		for(uint8_t j=0; j < 21; j++){
-			inLine[i][j] = ' ';
-		};
-	};
-};
-
-void text::Refresh(void)
-{
-	for(uint8_t i=0; i < 8; i++){
-		Lcd_KS0108.GoToXY(0,i);
-		for(uint8_t j=0; j < 21; j++){
-			Draw(inLine[i][j]);
-		};
-	};
-	Lcd_KS0108.GoToXY(0,0);
+	spaces = s;
 };
 
 void text::ClrScr()
@@ -28,92 +12,69 @@ void text::ClrScr()
 		Lcd_KS0108.WriteData(0x00);
 		Lcd_KS0108.WriteData(0x00);
 	};
-	Zero();
-	Refresh();
 	coursor_x = 0;
 	coursor_y = 0;
-}
+};
 
 void text::GoTo(uint8_t x, uint8_t y)
 {
-	if( x > 21 )return;
 	if( y > 8 )return;
+	if(( (char_width+spaces)*x) > 123)return;
 	Lcd_KS0108.GoToXYText(x,y);
+	coursor_x = (char_width+spaces)*x;
+	coursor_y = y;
+};
+
+void text::GoToAbs(uint8_t x, uint8_t y)
+{
+	if( y > 8 )return;
+	if( x > 123 )return;
+	Lcd_KS0108.GoToXY(x,y);
 	coursor_x = x;
 	coursor_y = y;
-}
+};
 
 void text::Draw(const char c)
 {
 	uint8_t z = c-32;
-	for(uint8_t i=0; i<5; i++){
-		Lcd_KS0108.WriteData( pgm_read_byte( font5x7 + (z*5) + i ));
-	};
-	Lcd_KS0108.WriteData(0x00);
-};
-
-void text::WriteChar(const char c)
-{
-	inLine[coursor_y][coursor_x] = c;
-	coursor_x++;
-	if( coursor_x >= 21 ){
-		coursor_x = 0;
-		coursor_y++;
-		if( coursor_y >=8 ){
-			coursor_y = 0;
-			coursor_x = 0;
-		};
-	};
-};
-
-void text::WriteString(const char* c)
-{
-	for(uint8_t i=0; i < 168; i++){
-		if( c[i] == 0 )break;
-		inLine[coursor_y][coursor_x] = c[i];
+	for( uint8_t i=0; i<5; i++ ){
+		Lcd_KS0108.WriteData( pgm_read_byte( font5x7 + (z*5) + i ) );
 		coursor_x++;
-		if(coursor_x > 20){
-			if( c[i+1] > ' ' && c[i]!=' ' ){
-				Lcd_KS0108.GoToXY(126,coursor_y);
-				Lcd_KS0108.WriteData(0x10);
-				Lcd_KS0108.WriteData(0x10);
-			};
-			
-			coursor_x = 0;
-			
-			coursor_y++;
-			if(coursor_y > 8){
-				coursor_y = 7;
-			};
-		};
+	};
+	for( uint8_t i=0; i<spaces; i++ ){
+		Lcd_KS0108.WriteData(0x00);
+		coursor_x++;
 	};
 };
 
-void text::Write(array<char>& c)
+void text::Write(const char c)
 {
-	for(uint8_t i=0; i<c.size(); i++){
-		if(c[i] == '\n')break;
-		if(c[i] == 0 )break;
-		WriteChar(c[i]);
+	if( (coursor_x + char_width + spaces ) > 127 )return;
+	Draw(c);
+};
+
+void text::Write(const char* c)
+{
+	for( uint8_t i=0; i < 30; i++ ){
+		if( c[i] == 0 )return;
+		Draw(c[i]);
 	};
 };
 
-void text::WriteBuffer(uint8_t* data)
+
+void text::Write(uint8_t* data)
 {
-	for( uint8_t i = 0; i < 255; i++ ){
-		if(*data == '\n')break;
-		WriteChar(*data++);
+	for( uint8_t i = 0; i < 30; i++ ){
+		if(*data == 0)break;
+		Write( (char)*data++);
 	};
 };
 
-void text::NextLine(void)
+void text::CoursorBlinkEnable(void)
 {
-	coursor_x = 0;
-	coursor_y++;
-	if(coursor_y > LINE_CNT){
-		coursor_y = LINE_CNT - 1;
-	};
-	Lcd_KS0108.GoToXY(coursor_x,coursor_y);
-}
+	Text.GoToAbs(Text.coursor_x, Text.coursor_y);
+	Lcd_KS0108.coursor ^=(0x7F);
+	Lcd_KS0108.WriteData(Lcd_KS0108.coursor);
+};
 
 text Text;

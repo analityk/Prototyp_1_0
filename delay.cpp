@@ -24,10 +24,10 @@ void delay_us(uint8_t us)
 	};
 };
 
-ISR(TIMER0_OVF_vect){
-	TCNT0 = 5;
-	time_now++;
-};
+//ISR(TIMER0_OVF_vect){
+	//TCNT0 = 5;
+	//time_now++;
+//};
 
 uint16_t Millis(void)
 {

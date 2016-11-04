@@ -4,39 +4,44 @@
 #include <avr/io.h>
 #include <lcd.h>
 #include <array.h>
-
-#define CHAR_CNT		22
-#define LINE_CNT		8
-#define MAX_CHAR_CNT	168
+#include <timer.h>
 
 class text{
 	private:
 	
 	void Zero(void);
 	
-	char inLine[8][22];
 	uint8_t coursor_x, coursor_y;
+	uint8_t spaces;
+	uint8_t char_width;
 	
 	void Draw(const char c);
 	
 	public:
-	text():coursor_x(0),coursor_y(0){
-		Zero();
+	text(): coursor_x(0), coursor_y(0), spaces(1), char_width(5){
+		ClrScr();
 	};
 	
-	void Refresh(void);
+	void SetSpaces(uint8_t s);
+	
 	void ClrScr();
+	
 	void GoTo(uint8_t x, uint8_t y);
-	void WriteChar(const char c);
-	void WriteString(const char* c);
-	void WriteLine(const char* c);
-	void Write(array<char>& c);
+	void GoToAbs(uint8_t x, uint8_t y);
 	
-	void WriteBuffer(uint8_t* data);
+	void Write(const char c);
+	void Write(const char* c);
+	void Write(uint8_t* data);
 	
-	void NextLine(void);
+	static void CoursorBlinkEnable(void);
+	
 };
 
 extern text Text;
 
 #endif // text_h__
+
+/*
+	NIE MA BUFORA EKRANU i huk z nim. piszemy na nim ró¿ne rzeczy ale zmiennym tekstem jest tylko jedna
+	linia - textbox. Tam mamy bufor uint8_t i tyle. go odœwie¿amy za ka¿dym razem. 
+*/
