@@ -194,5 +194,4 @@ void lcd_KS0108::LightOFF(void)
 	DDRG  |=(1<<0);
 	PORTG &=~(1<<0);
 };
-
 lcd_KS0108 Lcd_KS0108;

@@ -4,6 +4,7 @@
 #include <avr/io.h>
 #include <lcd.h>
 #include <text.h>
+#include <touch.h>
 
 #define LINE_CNT_MAX	8
 #define COLUMN_CNT_MAX	8

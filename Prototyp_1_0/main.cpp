@@ -55,32 +55,62 @@ void convert(uint16_t t){
 	cord[4] = 0;
 };
 
-
-void print(uint8_t* t, uint8_t x, uint8_t y){
-	Text.Write( (char*)cord);
-};
-
 void delay(uint32_t volatile t){
 	while(t--){};
 };
 
+//23.07
+
+char time_str[9];
+
+void FormatTime( uint8_t h, uint8_t m, uint8_t s ){
+	convert( (uint8_t)(h) );
+	time_str[0] = cord[2];
+	time_str[1] = cord[3];
+	time_str[2] = ':';
+	convert( (uint8_t)(m) );
+	time_str[3] = cord[2];
+	time_str[4] = cord[3];
+	time_str[5] = ':';
+	convert( (uint8_t)(s) );
+	time_str[6] = cord[2];
+	time_str[7] = cord[3];
+	time_str[8] = 0;
+};
 
 int main(void)
 {
 	CLKPR = 0x80;
 	CLKPR = 0x80;
 	
-	MainViev.Draw();
+	sei();
+	TextBoxViev.Draw();
+	TextBoxViev.SmalChars();
+	
 	Text.GoToAbs(12, 2);
 	
 	Timer.Enable();
 	
-	Timer.RegisterCallback( Text.CoursorBlinkEnable, 240 );
-	Timer.RegisterCallback( Lcd_KS0108.LightOFF, 2);
-	Timer.RegisterCallback( Lcd_KS0108.LightON, 3);
+	Timer.RegisterCallback( Text.CoursorBlinkEnable, 50 );
 	
 	while(1){
+		Touch.ReadCoordinates();
+				
+		Timer.Disable();
 		
+			convert(Touch.x);
+			Text.GoTo(2,2);
+			Text.Write( (char*)(cord) );
+			
+			convert(Touch.y);
+			Text.GoTo(10,2);
+			Text.Write( (char*)(cord) );
+			
+			Text.GoToAbs(100,2);
+		
+		Timer.Enable();
+		
+		delay(0xFFF);
 	};
 	
 	

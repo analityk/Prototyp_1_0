@@ -1,57 +1,37 @@
 ﻿#include <touch.h>
 
-touch Touch;
-
 uint16_t touch::rescale_x(uint16_t x)
 {
-	if( x > 1024 || x < 20 )return 0;
-	uint16_t tmp = x * 32;
-	if( tmp > 16384 ){
-		// dodawac
-		uint16_t dx = tmp - 16384;
-		uint16_t div_p2 = 7*(dx / 10);
-		uint16_t div_p3 = 7*(dx / 100);
-		tmp += (div_p2 + div_p3);
+	float dx;
+	
+	if( x > 505 ){
+		dx = 505 + 1.2*(x-505);
 		}else{
-		// odejmowac
-		uint16_t dx = 16384 - tmp;
-		uint16_t div_p2 = 6*(dx / 10);
-		uint16_t div_p3 = 4*(dx / 100);
-		tmp -= (div_p2 + div_p3);
+		dx = 505 - 1.18*(505-x);
 	};
-
-	return (tmp / 32); 
+	return (uint16_t)(dx);
 };
 
 uint16_t touch::rescale_y(uint16_t y)
 {
-	if( y > 1024 || y < 20 )return 0;
-	uint16_t tmp = y * 32;
-	if( tmp > 16384 ){
-		// dodawac
-		uint16_t dy = tmp - 16384;
-		uint16_t div_p2 = 2*(dy / 10);
-		uint16_t div_p3 = 8*(dy / 100);
-		tmp += (div_p2 + div_p3);
+	float dy;
+		
+	if( y > 505 ){
+		dy = 500 + 1.67*(y-505);
 		}else{
-		// odejmowac
-		uint16_t dy = 16384 - tmp;
-		uint16_t div_p2 = 1*(dy / 10);
-		uint16_t div_p3 = 9*(dy / 100);
-		tmp -= (div_p2 + div_p3);
+		dy = 500 - 1.67*(505-y);
 	};
-	
-	return (tmp / 32); 
+	return (uint16_t)(dy);
 }
 
 void touch::KeyPressed(void)
 {
-	while( ( Adc.current_X() + Adc.current_Y() ) < 0x0420 ){};
+	while( ( Adc.current_X() + Adc.current_Y() ) < 0x0500 ){};
 }
 
 bool touch::Press(void)
 {
-	if( Adc.current_X() + Adc.current_Y() < 0x0420 ){
+	if( Adc.current_X() + Adc.current_Y() < 0x0500 ){
 		return true;
 	};
 return false;
@@ -65,8 +45,8 @@ void touch::ReadCoordinates(void)
 	KeyPressed();
 	
 	for(uint8_t i=0; i<5; i++){
-		tx[i] = Adc.voltage_X();
-		ty[i] = Adc.voltage_Y();
+		tx[i] = Adc.voltage_Y();
+		ty[i] = Adc.voltage_X();
 	};
 	
 	uint16_t avx = 0; 
@@ -81,7 +61,9 @@ void touch::ReadCoordinates(void)
 	avy /= 5;
 	
 	
-	this->y = rescale_x(avy);
-	this->x = rescale_y(avx);
+	y = rescale_y(avy);
+	x = rescale_x(avx);
 	
-}
+};
+
+touch Touch;

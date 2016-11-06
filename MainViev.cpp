@@ -4,7 +4,6 @@ void mainViev::Draw(void)
 {
 	// znaki, litery, cyfry
 	
-	Text.ClrScr();
 	Text.SetSpaces(1);
 	Text.GoTo(0,0);
 	
@@ -43,6 +42,7 @@ void mainViev::Draw(void)
 	for( uint8_t i=0; i<60; i+=4 ){
 		Lcd_KS0108.SetPixel(126, 3+i);
 	};
+	Text.GoToAbs(0,0);
 };
 
 void mainViev::DecLine(void)

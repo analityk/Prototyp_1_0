@@ -4,6 +4,10 @@ textBoxViev TextBoxViev;
 
 void textBoxViev::Draw(void)
 {
+	
+	Text.GoTo(0,0);
+	Text.Write(" \x8a              \x81  OK");
+	
 	Text.SetSpaces(0);
 	Text.GoTo(0,1);
 	Text.Write("\x82=======================\x84");
