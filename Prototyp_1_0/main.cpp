@@ -20,6 +20,8 @@
 #include <MainViev.h>
 #include <TextBoxViev.h>
 
+#include <program_states.h>
+
 void supply_wait(void)__attribute__((naked)) __attribute__((section(".init0")));
 void supply_wait(){
 	PORTG =1;
@@ -84,33 +86,36 @@ int main(void)
 	CLKPR = 0x80;
 	
 	sei();
+	
+	TextBoxViev.BigChars();
 	TextBoxViev.Draw();
-	TextBoxViev.SmalChars();
 	
-	Text.GoToAbs(12, 2);
-	
-	Timer.Enable();
-	
-	Timer.RegisterCallback( Text.CoursorBlinkEnable, 50 );
+	//
+	//Timer.Enable();
+	//
+	//Timer.RegisterCallback( Text.CoursorBlinkEnable, 50 );
 	
 	while(1){
 		Touch.ReadCoordinates();
+		TextBoxViev.BigChars();
+		TextBoxViev.Draw();
+		
+		
+		//uint8_t read_key = touched( Touch.x/4, Touch.y/4, 0 );
 				
-		Timer.Disable();
+		//Timer.Disable();
 		
-			convert(Touch.x);
-			Text.GoTo(2,2);
-			Text.Write( (char*)(cord) );
+		Text.SetSpaces(1);
+		convert(Touch.x / 4);
+		Text.GoTo(2,2);
+		Text.Write((char*)(cord) );
 			
-			convert(Touch.y);
-			Text.GoTo(10,2);
-			Text.Write( (char*)(cord) );
-			
-			Text.GoToAbs(100,2);
+		convert(Touch.y / 4);
+		Text.GoTo(12,2);
+		Text.Write( (char*)(cord) );
 		
-		Timer.Enable();
-		
-		delay(0xFFF);
+		delay(0xFFFF);
+		//Timer.Enable();
 	};
 	
 	

@@ -4,7 +4,7 @@ textBoxViev TextBoxViev;
 
 void textBoxViev::Draw(void)
 {
-	
+	Text.SetSpaces(1);
 	Text.GoTo(0,0);
 	Text.Write(" \x8a              \x81  OK");
 	
@@ -18,7 +18,8 @@ void textBoxViev::Draw(void)
 	
 	Text.SetSpaces(0);
 	Text.GoTo(0,3);
-	Text.Write("\x83=======================\x85");		
+	Text.Write("\x83=======================\x85");
+	Text.GoTo(0,0);
 };
 
 void textBoxViev::BigChars(void)

@@ -57,6 +57,7 @@ void text::Write(const char* c)
 {
 	for( uint8_t i=0; i < 30; i++ ){
 		if( c[i] == 0 )return;
+		if( c[i] == '\n' )return;
 		Draw(c[i]);
 	};
 };

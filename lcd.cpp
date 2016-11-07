@@ -87,10 +87,16 @@ void lcd_KS0108::WriteData(uint8_t data)
 	}else{
 		SET_LCD_CS1;
 	};
+	
+	LCD_WAIT;
+	
 	LCD_DATA_DDR = 0xFF;
 	CLR_LCD_RW;
 	SET_LCD_RS;
 	LCD_DATA_PORT = data;
+	
+	LCD_WAIT;
+	
 	SET_LCD_EN;
 	LCD_WAIT;
 	CLR_LCD_EN;
