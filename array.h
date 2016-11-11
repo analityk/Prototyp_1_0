@@ -39,7 +39,7 @@ public:
 	};
 	
 	uint8_t insert(T t){
-		if( _destroy )return;
+		if( _destroy )return 2;
 		if( poz == rozm ){ return 1; };
 		data[poz] = t;
 		poz++;
@@ -56,8 +56,9 @@ public:
 	};
 	
 	T& read_last(void){
-		if( _destroy )return;
-		return data[poz-1];
+		if( !(_destroy) ){
+			return data[poz-1];
+		};
 	};
 	
 	bool full(void){
@@ -69,7 +70,7 @@ public:
 	};
 	
 	uint8_t remove_last(void){
-		if( _destroy )return;
+		if( _destroy )return 2;
 		if( poz == 0 )return 1;
 		poz--;
 		data[poz] = 0;

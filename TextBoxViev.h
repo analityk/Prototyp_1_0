@@ -8,7 +8,8 @@
 
 class textBoxViev{
 public:
-	textBoxViev(){};
+	uint8_t keycode;
+	textBoxViev():keycode(3){};
 		
 	void Draw(void);
 	void BigChars(void);

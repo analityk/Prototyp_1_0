@@ -7,11 +7,7 @@ void text::SetSpaces(uint8_t s)
 
 void text::ClrScr()
 {
-	for(uint8_t i=0; i < 8; i++){
-		Lcd_KS0108.GoToXY(126,i);
-		Lcd_KS0108.WriteData(0x00);
-		Lcd_KS0108.WriteData(0x00);
-	};
+	Lcd_KS0108.ClrScr();
 	coursor_x = 0;
 	coursor_y = 0;
 };

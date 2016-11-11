@@ -24,7 +24,7 @@ void textBoxViev::Draw(void)
 
 void textBoxViev::BigChars(void)
 {
-
+	keycode = 2;
 	Text.SetSpaces(4);
 	Text.GoToAbs(5,4);
 	Text.Write("1234567890()=");
@@ -38,6 +38,7 @@ void textBoxViev::BigChars(void)
 
 void textBoxViev::SmalChars(void)
 {
+	keycode = 3;
 	Text.SetSpaces(4);
 	Text.GoToAbs(5,4);
 	Text.Write("1234567890()=");
@@ -48,3 +49,4 @@ void textBoxViev::SmalChars(void)
 	Text.GoToAbs(1,7);
 	Text.Write("\x88zxcvbnm<>?[]|");
 };
+

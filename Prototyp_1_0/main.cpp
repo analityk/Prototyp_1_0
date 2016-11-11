@@ -17,6 +17,7 @@
 #include <touch.h>
 #include <spi.h>
 #include <at45db321.h>
+#include <keys.h>
 #include <MainViev.h>
 #include <TextBoxViev.h>
 
@@ -61,8 +62,6 @@ void delay(uint32_t volatile t){
 	while(t--){};
 };
 
-//23.07
-
 char time_str[9];
 
 void FormatTime( uint8_t h, uint8_t m, uint8_t s ){
@@ -80,43 +79,130 @@ void FormatTime( uint8_t h, uint8_t m, uint8_t s ){
 	time_str[8] = 0;
 };
 
+array< ram_grip > cells_mem(100);
+
+uint8_t cells_col_offset = 0;
+uint8_t cells_line_offset = 0;
+
+void print_time(void){
+	FormatTime( Timer.Hours, Timer.Minutes, Timer.Seconds );
+	Text.GoTo(13,7);
+	Text.SetSpaces(1);
+	Text.Write(time_str);
+};
+
 int main(void)
-{
-	CLKPR = 0x80;
-	CLKPR = 0x80;
-	
+{	
 	sei();
 	
-	TextBoxViev.BigChars();
-	TextBoxViev.Draw();
+	MainViev.Draw();
 	
-	//
-	//Timer.Enable();
-	//
-	//Timer.RegisterCallback( Text.CoursorBlinkEnable, 50 );
+	_ps_act = PS_MAIN_VIEV;
+	_ps_prev = PS_MAIN_VIEV;
+	
+	Timer.RegisterCallback( print_time, 10 );
+	Timer.Enable();
 	
 	while(1){
-		Touch.ReadCoordinates();
-		TextBoxViev.BigChars();
-		TextBoxViev.Draw();
-		
-		
-		//uint8_t read_key = touched( Touch.x/4, Touch.y/4, 0 );
-				
-		//Timer.Disable();
-		
-		Text.SetSpaces(1);
-		convert(Touch.x / 4);
-		Text.GoTo(2,2);
-		Text.Write((char*)(cord) );
+	
+		if( (_ps_act == PS_MAIN_VIEV) && (_ps_prev == PS_MAIN_VIEV) ){
+			Timer.Enable();
+			Touch.ReadCoordinates();
+			uint8_t r = touched( Touch.x/4, Touch.y/4, MainViev.keycode );
+
+			if( r == 0x88 ){ MainViev.DecLine(); MainViev.Draw(); delay(0x22000); };
+			if( r == 0x89 ){ MainViev.IncLine(); MainViev.Draw(); delay(0x22000); };
+			if( r == 0x81 ){ MainViev.DecCol(); MainViev.Draw(); delay(0x22000); };
+			if( r == 0x80 ){ MainViev.IncCol(); MainViev.Draw(); delay(0x22000); };
 			
-		convert(Touch.y / 4);
-		Text.GoTo(12,2);
-		Text.Write( (char*)(cord) );
+			if( r == 200 ){
+				_ps_act = PS_TEXT_EDIT;
+				_ps_prev = PS_MAIN_VIEV;
+				cells_col_offset = MainViev.ActColumn();
+				cells_line_offset = MainViev.ActLine();
+			};
+			
+			if( r == 201 ){
+				_ps_act = PS_TEXT_EDIT;
+				_ps_prev = PS_MAIN_VIEV;
+				cells_col_offset = MainViev.ActColumn();
+				cells_line_offset = MainViev.ActLine()+1;
+			};
+			
+			if( r == 202 ){
+				_ps_act = PS_TEXT_EDIT;
+				_ps_prev = PS_MAIN_VIEV;
+				cells_col_offset = MainViev.ActColumn()+1;
+				cells_line_offset = MainViev.ActLine();
+			};
+			
+			if( r == 203 ){
+				_ps_act = PS_TEXT_EDIT;
+				_ps_prev = PS_MAIN_VIEV;
+				cells_col_offset = MainViev.ActColumn()+1;
+				cells_line_offset = MainViev.ActLine()+1;
+			};
+			Timer.Disable();
+		};
 		
-		delay(0xFFFF);
-		//Timer.Enable();
+		if( (_ps_act == PS_TEXT_EDIT) && (_ps_prev == PS_MAIN_VIEV) ){
+			Text.SetSpaces(1);
+			Text.ClrScr();
+			Text.GoToAbs(0, 5);
+			Lcd_KS0108.WriteData(0x00);
+			Text.GoToAbs(0, 7);
+			Lcd_KS0108.WriteData(0x00);
+			TextBoxViev.Draw();
+			
+			Text.GoTo(12,0);
+			Text.Write('#');
+			Text.GoTo(13, 0);
+			Text.Write(cells_col_offset+65);
+			Text.GoTo(14, 0);
+			Text.Write(cells_line_offset+49);
+			
+			TextBoxViev.SmalChars();
+			_ps_act = PS_TEXT_EDIT;
+			_ps_prev = PS_TEXT_SMALL;
+		};
+		
+		if( (_ps_act == PS_TEXT_EDIT) && (_ps_prev == PS_TEXT_SMALL) ){
+			Touch.ReadCoordinates();
+			uint8_t r = touched( Touch.x/4, Touch.y/4, TextBoxViev.keycode );
+			if( r == 231 ){
+				_ps_act = PS_TEXT_EDIT;
+				_ps_prev = PS_TEXT_BIG;
+				TextBoxViev.BigChars();
+				delay(0x1FFFF);
+			};
+			if( r == 228 ){
+				_ps_act = PS_TEXT_EDIT_END;
+				_ps_prev = PS_TEXT_EDIT;
+			};
+		};
+		
+		if( (_ps_act == PS_TEXT_EDIT) && (_ps_prev == PS_TEXT_BIG) ){
+			Touch.ReadCoordinates();
+			uint8_t r = touched( Touch.x/4, Touch.y/4, TextBoxViev.keycode );
+			if( r == 231 ){
+				_ps_act = PS_TEXT_EDIT;
+				_ps_prev = PS_TEXT_SMALL;
+				TextBoxViev.SmalChars();
+				delay(0x1FFFF);
+			};
+			if( r == 228 ){
+				_ps_act = PS_TEXT_EDIT_END;
+				_ps_prev = PS_TEXT_EDIT;
+			};
+		};
+		
+		// after push OK
+		if( (_ps_act == PS_TEXT_EDIT_END) && (_ps_prev == PS_TEXT_EDIT) ){
+			Text.ClrScr();
+			MainViev.Draw();
+			_ps_act = PS_MAIN_VIEV;
+			_ps_prev = PS_MAIN_VIEV;
+			delay(0x88200);
+		};
 	};
-	
-	
 }; 

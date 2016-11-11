@@ -65,4 +65,14 @@ void mainViev::IncCol(void)
 	if( column < COLUMN_CNT_MAX )column++;
 };
 
+uint8_t mainViev::ActLine(void)
+{
+	return line;
+};
+
+uint8_t mainViev::ActColumn(void)
+{
+	return column;
+};
+
 mainViev MainViev;
