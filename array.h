@@ -87,6 +87,10 @@ public:
 		return (rozm);
 	};
 	
+	uint8_t cnts(void){
+		return poz - 1;
+	};
+	
 	T& operator[] (uint8_t i)
 	{
 		if( _destroy )return (data[0]);

@@ -22,6 +22,9 @@ class text{
 		ClrScr();
 	};
 	
+	uint8_t Get_Coursor_X(void);
+	uint8_t Get_Coursor_Y(void);
+	
 	void SetSpaces(uint8_t s);
 	
 	void ClrScr();
@@ -32,6 +35,7 @@ class text{
 	void Write(const char c);
 	void Write(const char* c);
 	void Write(uint8_t* data);
+	void Write(array<uint8_t>& data);
 	
 	static void CoursorBlinkEnable(void);
 	

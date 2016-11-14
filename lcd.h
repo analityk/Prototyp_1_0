@@ -102,6 +102,9 @@ class lcd_KS0108{
 	void SetPixel(uint8_t x, uint8_t y);
 	void ClrPixel(uint8_t x, uint8_t y);
 	
+	uint8_t Get_LCD_X(void);
+	uint8_t Get_LCD_Y(void);
+	
 	static void LightON(void);
 	static void LightOFF(void);
 	

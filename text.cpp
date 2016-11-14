@@ -1,5 +1,15 @@
 ﻿#include <text.h>
 
+uint8_t text::Get_Coursor_X(void)
+{
+	return coursor_x;
+};
+
+uint8_t text::Get_Coursor_Y(void)
+{
+	return coursor_y;
+};
+
 void text::SetSpaces(uint8_t s)
 {
 	spaces = s;
@@ -64,6 +74,15 @@ void text::Write(uint8_t* data)
 	for( uint8_t i = 0; i < 30; i++ ){
 		if(*data == 0)break;
 		Write( (char)*data++);
+	};
+};
+
+void text::Write(array<uint8_t>& data)
+{
+	for( uint8_t i=0; i<data.size(); i++ ){
+		if( data[i] == 0 )return;
+		if( data[i] == '\n')return;
+		Draw(data[i]);
 	};
 };
 

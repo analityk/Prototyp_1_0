@@ -189,6 +189,16 @@ void lcd_KS0108::ClrPixel(uint8_t x, uint8_t y)
 	WriteData(tmp);
 }
 
+uint8_t lcd_KS0108::Get_LCD_X(void)
+{
+	return axis_x;
+};
+
+uint8_t lcd_KS0108::Get_LCD_Y(void)
+{
+	return axis_x;
+};
+
 void lcd_KS0108::LightON(void)
 {
 	PORTG |=(1<<0);

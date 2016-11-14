@@ -250,7 +250,7 @@ uwaga, do wartoœci znaków specjalnych z tablicy lut dodaæ 32
 		if( read_key == 231 ){
 			if( TextBoxViev.charsize == 2 ){
 				TextBoxViev.SmalChars();
-				}else{
+			}else{
 				TextBoxViev.BigChars();
 			};
 			delay(0xFFFF);

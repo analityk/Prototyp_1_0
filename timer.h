@@ -17,9 +17,9 @@ typedef void (*TPcallback)(void);
 
 class timer{
 public:
-	TPcallback callbacks[4];
-	uint16_t periods[4];
-	uint16_t cnts_period[4];
+	TPcallback callbacks;
+	uint16_t periods;
+	uint16_t cnts_period;
 	
 	uint16_t tcnt1;
 	
@@ -36,11 +36,11 @@ public:
 		TCCR1B = (1<<CS02)|(1<<CS00);	// fcpu / 1024
 		TCNT1 = 0xFFFF-GLOB_TIMER_TCNT;
 		TIMSK1 = (0<<TOIE1);
-		for( uint8_t i=0; i<4; i++ ){
-			callbacks[i] = NULL;
-			periods[i] = 0;
-			cnts_period[i] = 0;
-		};
+		
+		callbacks = NULL;
+		periods = 0;
+		cnts_period = 0;
+		
 		//timer 2 for global time
 		TCCR3A = 0;
 		TCCR3B = (1<<CS02)|(1<<CS00);
