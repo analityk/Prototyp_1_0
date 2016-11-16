@@ -1,5 +1,11 @@
 /*
 
+cells_mem - tablica trzymaj¹ca adresy w pamiêci ram. w pamiêci ram znajduje siê zawartroœæ komórki. Na razie jest
+to tylko tekst. Tekst ma byæ ³adowany do textboxu w razie wybrania komórki, która taki tekst ju¿ zwiera. 
+
+cells_mem( 0 - 90 ) aka A-J(0), A-J(1) itd
+czyli komórka 52 to E2 
+
 G³ówne okno programu wygl¹da tak:
 
 	Text.ClrScr();

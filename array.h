@@ -72,8 +72,8 @@ public:
 	uint8_t remove_last(void){
 		if( _destroy )return 2;
 		if( poz == 0 )return 1;
+		data[poz-1] = 0;
 		poz--;
-		data[poz] = 0;
 		return 0;
 	};
 	

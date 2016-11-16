@@ -71,7 +71,7 @@ void text::Write(const char* c)
 
 void text::Write(uint8_t* data)
 {
-	for( uint8_t i = 0; i < 30; i++ ){
+	for( uint8_t i = 0; i < 80; i++ ){
 		if(*data == 0)break;
 		Write( (char)*data++);
 	};

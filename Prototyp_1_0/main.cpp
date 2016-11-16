@@ -88,16 +88,16 @@ void FormatTime( uint8_t h, uint8_t m, uint8_t s ){
 	time_str[8] = 0;
 };
 
-
-
 void print_time(void){
 	FormatTime( Timer.Hours, Timer.Minutes, Timer.Seconds );
 	Text.GoTo(13,7);
 	Text.SetSpaces(1);
+	Text.SetSpaces(1);
 	Text.Write(time_str);
+	Text.GoTo(13,7);
 };
 
-array< ram_grip > cells_mem(100);
+array< ram_grip > cells_mem(90);
 array< uint8_t > inp_str(50);
 uint8_t TextBoxWindow[20];
 
@@ -115,6 +115,10 @@ int main(void)
 	
 	for( uint8_t i=0; i<19; i++ ){
 		TextBoxWindow[i] = ' ';
+	};
+	
+	for( uint8_t i=0; i<90; i++ ){
+		cells_mem[i] = ram.get_mem(50);
 	};
 	
 	while(1){
@@ -206,9 +210,11 @@ int main(void)
 			Text.GoTo(14, 0);
 			Text.Write(cells_line_offset+49);
 			
+			//ram.read_block( cells_mem[cells_col_offset*10+cells_line_offset], 0, 50, inp_str.data );
+			
 			TextBoxViev.SmalChars();
 			_ps_act = PS_TEXT_EDIT;
-			_ps_prev = PS_TEXT_SMALL;
+			_ps_prev = PS_TEXT_REFRESH;
 			
 			Text.GoToAbs(12,2);
 			Text.SetSpaces(1);
@@ -252,8 +258,9 @@ int main(void)
 			};
 			
 			if( r == 229 ){
+				inp_str.remove_last();
 				_ps_act = PS_TEXT_EDIT;
-				_ps_prev = PS_TEXT_EDIT_BACKSPACE;
+				_ps_prev = PS_TEXT_REFRESH;
 			};
 			
 			if( r == 230 ){
@@ -264,12 +271,16 @@ int main(void)
 			if( r < 200 ){
 				inp_str.insert(r);
 				_ps_act = PS_TEXT_EDIT;
-				_ps_prev = PS_TEXT_EDIT_CHAR;
+				_ps_prev = PS_TEXT_REFRESH;
 			};
 		};
 		
 		// after push OK
 		if( (_ps_act == PS_TEXT_EDIT_END) && (_ps_prev == PS_TEXT_EDIT) ){
+			
+			// save content in sram
+			//ram.write_block( cells_mem[ cells_col_offset*10 + cells_line_offset ], 0, 50, inp_str.data);
+			
 			inp_str.erase();
 			Text.ClrScr();
 			MainViev.Draw();
@@ -286,33 +297,21 @@ int main(void)
 		};
 		
 		// after push char
-		if( (_ps_act == PS_TEXT_EDIT) && (_ps_prev == PS_TEXT_EDIT_CHAR) ){
+		if( (_ps_act == PS_TEXT_EDIT) && (_ps_prev == PS_TEXT_REFRESH) ){
 			Text.GoTo(2,2);
 			Text.SetSpaces(1);
 			
 			uint8_t n = 0;
 			
-			if( inp_str.cnts() > 18 ){
-				n = inp_str.cnts() - 18;
+			if( inp_str.cnts() > 17 ){
+				n = inp_str.cnts() - 17;
 			};
 			
-			for( uint8_t i=0; i<18; i++ ){
+			for( uint8_t i=0; i < 18; i++ ){
 				TextBoxWindow[i] = inp_str[i+n];
 			};
-			
-			TextBoxWindow[19] = 0;
-			Text.Write(TextBoxWindow);
-			
-			_ps_act = PS_TEXT_EDIT;
-			_ps_prev = PS_TEXT_SMALL;
-		};
 		
-		// after push backspace
-		if( (_ps_act == PS_TEXT_EDIT) && (_ps_prev == PS_TEXT_EDIT_BACKSPACE) ){
-			Text.GoTo(2,2);
-			Text.SetSpaces(1);
-			
-			uint8_t n = 0;
+			TextBoxWindow[18] = 0;
 			
 			for( uint8_t i=0; i<18; i++ ){
 				Text.Write(' ');
@@ -321,17 +320,6 @@ int main(void)
 			Text.GoTo(2,2);
 			Text.SetSpaces(1);
 			
-			inp_str.remove_last();
-			
-			if( inp_str.cnts() > 18 ){
-				n = inp_str.cnts() - 18;
-			};
-			
-			for( uint8_t i=0; i<18; i++ ){
-				TextBoxWindow[i] = inp_str[i+n];
-			};
-
-			TextBoxWindow[18] = 0;
 			Text.Write(TextBoxWindow);
 			
 			_ps_act = PS_TEXT_EDIT;
@@ -340,6 +328,9 @@ int main(void)
 		
 		// after push coursor move
 		if( (_ps_act == PS_TEXT_EDIT) && (_ps_prev == PS_TEXT_EDIT_COURSOR_MOVE) ){
+			
+			
+			
 			_ps_act = PS_TEXT_EDIT;
 			_ps_prev = PS_TEXT_SMALL;
 		};

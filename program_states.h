@@ -20,5 +20,6 @@ Program_state _next = 0;
 #define PS_TEXT_EDIT_COURSOR_MOVE	8
 #define PS_TEXT_EDIT_BACKSPACE		9
 #define PS_TEXT_EDIT_ADDR			10
+#define PS_TEXT_REFRESH		11
 
 #endif // program_states_h__
