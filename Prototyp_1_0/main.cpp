@@ -97,12 +97,18 @@ void print_time(void){
 	Text.GoTo(13,7);
 };
 
+void dummy_function(void){
+	return;
+};
+
 array< ram_grip > cells_mem(90);
 array< uint8_t > inp_str(50);
 uint8_t TextBoxWindow[20];
+uint8_t ram_buffer[50];
 
 uint8_t cells_col_offset = 0;
 uint8_t cells_line_offset = 0;
+uint8_t ram_cells_addr;
 
 int main(void)
 {	
@@ -119,6 +125,18 @@ int main(void)
 	
 	for( uint8_t i=0; i<90; i++ ){
 		cells_mem[i] = ram.get_mem(50);
+		ram.write_block( cells_mem[i], 0, 50, inp_str.data );
+		if( cells_mem[i] == 0 ){
+			Text.GoTo(0,0);
+			Text.SetSpaces(1);
+			Text.Write(" ramm alloc error ");
+			Touch.ReadCoordinates();
+			wait_release_key();
+		};
+	};
+	
+	for( uint8_t i=0; i<50; i++  ){
+		ram_buffer[i] = 0;
 	};
 	
 	while(1){
@@ -192,8 +210,8 @@ int main(void)
 		// after push cell
 		if( (_ps_act == PS_TEXT_EDIT) && (_ps_prev == PS_MAIN_VIEV) ){
 			
-			Text.SetSpaces(1);
 			Text.ClrScr();
+			Text.SetSpaces(1);
 			
 			Text.GoToAbs(0, 5);
 			Lcd_KS0108.WriteData(0x00);
@@ -210,17 +228,25 @@ int main(void)
 			Text.GoTo(14, 0);
 			Text.Write(cells_line_offset+49);
 			
-			//ram.read_block( cells_mem[cells_col_offset*10+cells_line_offset], 0, 50, inp_str.data );
-			
 			TextBoxViev.SmalChars();
-			_ps_act = PS_TEXT_EDIT;
-			_ps_prev = PS_TEXT_REFRESH;
+						
+			inp_str.erase();
+			ram_cells_addr = cells_col_offset*10 + cells_line_offset;
+			ram.read_block( cells_mem[ram_cells_addr], 0, 50, ram_buffer );
+			
+			for( uint8_t i=0; i<50; i++ ){
+				if( ram_buffer[i] == 0 )break;					
+				inp_str.insert(ram_buffer[i]);
+			};
 			
 			Text.GoToAbs(12,2);
 			Text.SetSpaces(1);
 			
 			Timer.RegisterCallback( Text.CoursorBlinkEnable , 50 );
 			Timer.Enable();
+			
+			_ps_act = PS_TEXT_EDIT;
+			_ps_prev = PS_TEXT_REFRESH;
 			
 		};
 		
@@ -240,10 +266,10 @@ int main(void)
 					TextBoxViev.BigChars();
 				};
 				
-				Text.GoTo(2,2);
+				Text.GoTo(inp_str.cnts()+2,2);
 				Text.SetSpaces(1);
 				_ps_act = PS_TEXT_EDIT;
-				_ps_prev = PS_TEXT_EDIT_CHAR;
+				_ps_prev = PS_TEXT_SMALL;
 				Timer.Enable();
 			};
 			
@@ -279,9 +305,12 @@ int main(void)
 		if( (_ps_act == PS_TEXT_EDIT_END) && (_ps_prev == PS_TEXT_EDIT) ){
 			
 			// save content in sram
-			//ram.write_block( cells_mem[ cells_col_offset*10 + cells_line_offset ], 0, 50, inp_str.data);
+			ram_cells_addr = cells_col_offset*10 + cells_line_offset;
 			
+			ram.write_block( cells_mem[ram_cells_addr], 0, inp_str.cnts(), inp_str.data );
+
 			inp_str.erase();
+			
 			Text.ClrScr();
 			MainViev.Draw();
 			_ps_act = PS_MAIN_VIEV;
@@ -296,15 +325,22 @@ int main(void)
 			_ps_prev = PS_TEXT_SMALL;
 		};
 		
-		// after push char
 		if( (_ps_act == PS_TEXT_EDIT) && (_ps_prev == PS_TEXT_REFRESH) ){
+			
+			Timer.Disable();
+			Text.SetSpaces(1);
+			Text.GoTo(3,0);
+			convert(inp_str.cnts());
+			Text.Write(cord);
+			Timer.Enable();
+			
 			Text.GoTo(2,2);
 			Text.SetSpaces(1);
 			
 			uint8_t n = 0;
 			
-			if( inp_str.cnts() > 17 ){
-				n = inp_str.cnts() - 17;
+			if( inp_str.cnts() > 18 ){
+				n = inp_str.cnts() - 18;
 			};
 			
 			for( uint8_t i=0; i < 18; i++ ){
@@ -317,6 +353,9 @@ int main(void)
 				Text.Write(' ');
 			};
 			
+			Text.GoTo(20, 2);
+			Text.Write('\x87');
+			
 			Text.GoTo(2,2);
 			Text.SetSpaces(1);
 			
@@ -328,9 +367,7 @@ int main(void)
 		
 		// after push coursor move
 		if( (_ps_act == PS_TEXT_EDIT) && (_ps_prev == PS_TEXT_EDIT_COURSOR_MOVE) ){
-			
-			
-			
+						
 			_ps_act = PS_TEXT_EDIT;
 			_ps_prev = PS_TEXT_SMALL;
 		};

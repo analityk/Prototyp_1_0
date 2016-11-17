@@ -47,7 +47,7 @@ public:
 	};
 	
 	void erase(void){
-		if( _destroy )return;
+		//if( _destroy )return;
 		for(uint8_t i=0; i<rozm; i++){
 			data[i] = 0;
 		};
@@ -88,7 +88,7 @@ public:
 	};
 	
 	uint8_t cnts(void){
-		return poz - 1;
+		return poz;
 	};
 	
 	T& operator[] (uint8_t i)
