@@ -262,4 +262,58 @@ uwaga, do wartoœci znaków specjalnych z tablicy lut dodaæ 32
 			delay(0xFFFF);
 		};
 				
+				
+				
+				void onp_tokenizer(array<uint8_t>& input){
+					uint8_t r = 0;
+					uint8_t tfc = 0;
+					uint8_t tokcnt = 0;
+					uint8_t funct_cnt = 0;
+					
+					for( uint8_t i=0; i < input.cnts(); i++ ){
+						r = input[i];
+						
+						// jeœli cyfra lub kropka
+						if( is_digit(r) || is_dot(r) ){
+							tab2f[tfc] = r;
+							tfc++;
+							}else{
+							// jeœli jakiœ inny znak to tak czy siak zrób
+							// jeœli by³a choæ jedna cyfra
+							if( tfc ){
+								tab2f[tfc] = 0;
+								tfc = 0;
+								if( !check_syntax(tab2f) ){
+									double d = atof((char*)(tab2f));
+									tokens[tokcnt].Udata.data_double = d;
+									tokens[tokcnt].content_type = ONP_CT_DOUBLE;
+									tokcnt++;
+									}else{
+									// jeœli pierwsza by³a kropka lub by³a tylko kropka to jest to b³¹d
+								};
+							};// tfc
+							
+							// jakiœ inny znak to znaczy jaki?
+							// jeœli nawias to wtedy token to znak a typ to nawias
+							if( is_any_bracket(r) ){
+								tokens[tokcnt].Udata.data_tab[0] = r;
+								tokens[tokcnt].Udata.data_tab[1] = 0;
+								tokens[tokcnt].content_type = ONP_CT_BRACKET;
+								// ka¿dy nawias liczony jest osobno, to wa¿na rzecz
+								tokcnt++;
+							};
+							
+							// jeœli jest jakiœ dowolnie inny znak to nie bêdzie ich wiêcej ni¿ 4
+							if( is_AZ(r)||is_az(r) ){
+								tokens[tokcnt].Udata.data_tab[funct_cnt] = r;
+								funct_cnt++;
+								if( funct_cnt > 4 ){
+									// raport error np. sincos( (brak ( po sin
+								};
+							};
+							
+						};
+					};
+				};
+				
 */

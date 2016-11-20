@@ -197,6 +197,10 @@
       <SubType>compile</SubType>
       <Link>MainViev.cpp</Link>
     </Compile>
+    <Compile Include="..\onp.cpp">
+      <SubType>compile</SubType>
+      <Link>onp.cpp</Link>
+    </Compile>
     <Compile Include="..\spi.cpp">
       <SubType>compile</SubType>
       <Link>spi.cpp</Link>
