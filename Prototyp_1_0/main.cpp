@@ -4,6 +4,8 @@
  * Created: 2016-02-27 12:07:23
  * Author : Szymon
  */ 
+// here is what more should be done
+#include <to_do.h>
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
@@ -21,7 +23,8 @@
 #include <MainViev.h>
 #include <TextBoxViev.h>
 #include <program_states.h>
-#include <onp.h>
+#include <rpn.h>
+
 
 void supply_wait(void)__attribute__((naked)) __attribute__((section(".init0")));
 void supply_wait(){
@@ -103,12 +106,14 @@ void dummy_function(void){
 
 array< ram_grip > cells_mem(90);
 array< uint8_t > inp_str(50);
+
 uint8_t TextBoxWindow[20];
 uint8_t ram_buffer[50];
 
 uint8_t cells_col_offset = 0;
 uint8_t cells_line_offset = 0;
 uint8_t ram_cells_addr;
+
 
 int main(void)
 {	
@@ -122,24 +127,24 @@ int main(void)
 	for( uint8_t i=0; i<d.cnts(); i++ ){
 		d[i] = 0;
 	};
-	d.insert('2');
-	d.insert('*');
-	d.insert('s');
-	d.insert('i');
-	d.insert('n');
-	d.insert('(');
-	d.insert('3');
-	d.insert('0');
-	d.insert(')');
 	
-	uint8_t tkcnt = onp_tokenizer(d);
+	/* test test test */
+	char expr[] = "6/(3*2)+4";
+	
+	for( uint8_t i=0; i<strlen(expr); i++ ){
+		d.insert(expr[i]);
+	};
+	
+	uint8_t tkcnt = rpn.tokenizer(d);
+	
+	rpn.infix_to_postfix();
 	
 	uint8_t dts[20];
 	
 	Token tok;
 	
 	for( uint8_t i=0; i<tkcnt; i++ ){
-		token_get(&tok, i);
+		rpn.get_token(&tok, i);
 		Text.GoTo(0,i);
 		
 		if( tok.content_type == ONP_CT_DOUBLE ){
@@ -149,6 +154,7 @@ int main(void)
 			Text.Write(tok.Udata.data_tab);
 		};
 		
+		delay(0xFFFFF);
 	};
 	
 	while(1){

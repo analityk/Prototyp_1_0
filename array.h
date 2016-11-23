@@ -16,7 +16,7 @@ public:
 	array(uint8_t tsize){
 		data = (T*)malloc(sizeof(T)*tsize);
 		for(uint8_t i=0; i<tsize; i++){
-			data[i] = T();
+			data[i].T::T();
 		};
 		rozm = tsize;
 		poz = 0;

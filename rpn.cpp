@@ -20,6 +20,8 @@ bool is_digit(uint8_t d){
 	return false;
 };
 
+bool is_bracket(uint8_t d){
+	if( (d=='(') || (d==')') ){
 		return true;
 	};
 	return false;
@@ -60,6 +62,7 @@ uint8_t sym_type(uint8_t r){
 		return ONP_ST_OPER;
 	};
 	
+	if( is_bracket(r) ){
 		return ONP_ST_BRACKET;
 	};
 	
@@ -194,6 +197,7 @@ uint8_t RPN::infix_to_postfix(void)
 uint8_t RPN::tokenizer(array<uint8_t>& r)
 {
 	if( r.cnts() <= 1 ){
+		// only one symbol 
 		if( is_digit(r[0])){
 			double d = 0.0;
 			uint8_t t[5];
@@ -213,6 +217,16 @@ uint8_t RPN::tokenizer(array<uint8_t>& r)
 	uint8_t a = 0;
 	uint8_t b = sym_type(r[0]);
 		
+	for( uint8_t i = 0; i < r.cnts(); i++ ){
+		a = b;
+		b = sym_type(r[i+1]);
+			
+		if( (a == ONP_ST_DIGIT) || (a == ONP_ST_DOT) ){
+			tab2f[tcnt] = r[i];
+			tcnt++;
+				
+			// następny nie jest cyfrą i nie jest kropką
+			// next is not digit and is not dot
 			if( !((b == ONP_ST_DIGIT)||(b == ONP_ST_DOT)) ){
 				if( !(tcnt == 0) ){
 					tab2f[tcnt] = 0;
