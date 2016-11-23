@@ -44,8 +44,3 @@ class text{
 extern text Text;
 
 #endif // text_h__
-
-/*
-	NIE MA BUFORA EKRANU i huk z nim. piszemy na nim ró¿ne rzeczy ale zmiennym tekstem jest tylko jedna
-	linia - textbox. Tam mamy bufor uint8_t i tyle. go odœwie¿amy za ka¿dym razem. 
-*/

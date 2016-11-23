@@ -27,6 +27,9 @@ public:
 	~array(){
 		poz = 0;
 		rozm = 0;
+		for(uint8_t i=0; i<rozm; i++){
+			data[i].T::~T();
+		};
 		free(data);
 	};
 	
@@ -47,7 +50,6 @@ public:
 	};
 	
 	void erase(void){
-		//if( _destroy )return;
 		for(uint8_t i=0; i<rozm; i++){
 			data[i] = 0;
 		};
@@ -59,6 +61,7 @@ public:
 		if( !(_destroy) ){
 			return data[poz-1];
 		};
+		return data[poz];
 	};
 	
 	bool full(void){
@@ -72,7 +75,7 @@ public:
 	uint8_t remove_last(void){
 		if( _destroy )return 2;
 		if( poz == 0 )return 1;
-		data[poz-1] = 0;
+		data[poz].T::~T();
 		poz--;
 		return 0;
 	};
