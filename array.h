@@ -16,7 +16,7 @@ public:
 	array(uint8_t tsize){
 		data = (T*)malloc(sizeof(T)*tsize);
 		for(uint8_t i=0; i<tsize; i++){
-			data[i].T::T();
+			data[i] = T();
 		};
 		rozm = tsize;
 		poz = 0;
@@ -74,7 +74,10 @@ public:
 	
 	uint8_t remove_last(void){
 		if( _destroy )return 2;
-		if( poz == 0 )return 1;
+		if( poz == 0 ){
+			data[0].T::~T();
+			return 1;
+		};
 		data[poz].T::~T();
 		poz--;
 		return 0;

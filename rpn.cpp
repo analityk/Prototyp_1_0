@@ -93,22 +93,32 @@ void RPN::set_priority(Token* t)
 		switch(symbol){
 			case '+':{
 				t->prior_lvl = ONP_PL_ADD;
+				t->func_type = ONP_F_ADD;
+				t->pcnt = ONP_PCNT_2;
 				break;
 			};
 			case '-':{
 				t->prior_lvl = ONP_PL_SUB;
+				t->func_type = ONP_F_SUB;
+				t->pcnt = ONP_PCNT_2;
 				break;
 			};
 			case '*':{
 				t->prior_lvl = ONP_PL_MUL;
+				t->func_type = ONP_F_MUL;
+				t->pcnt = ONP_PCNT_2;
 				break;
 			};
 			case '/':{
 				t->prior_lvl = ONP_PL_DIV;
+				t->func_type = ONP_F_DIV;
+				t->pcnt = ONP_PCNT_2;
 				break;
 			};
 			case '^':{
 				t->prior_lvl = ONP_PL_POW;
+				t->func_type = ONP_F_POW;
+				t->pcnt = ONP_PCNT_2;
 				break;
 			};
 			default:break;
@@ -117,14 +127,172 @@ void RPN::set_priority(Token* t)
 	
 	if( t->content_type == ONP_CT_FUNCT ){
 		t->prior_lvl = ONP_PL_FUNC;
+		if( strcmp( (char*)(t->Udata.data_tab), "sin") == 0 ){
+			t->func_type = ONP_F_SIN;
+			t->pcnt = ONP_PCNT_1;
+		};
+		if( strcmp( (char*)(t->Udata.data_tab), "cos") == 0 ){
+			t->func_type = ONP_F_COS;
+			t->pcnt = ONP_PCNT_1;
+		};
+		if( strcmp( (char*)(t->Udata.data_tab), "tan") == 0 ){
+			t->func_type = ONP_F_TAN;
+			t->pcnt = ONP_PCNT_1;
+		};
+		if( strcmp( (char*)(t->Udata.data_tab), "ctg") == 0 ){
+			t->func_type = ONP_F_CTG;
+			t->pcnt = ONP_PCNT_1;
+		};
+		if( strcmp( (char*)(t->Udata.data_tab), "asin") == 0 ){
+			t->func_type = ONP_F_ASIN;
+			t->pcnt = ONP_PCNT_1;
+		};
+		if( strcmp( (char*)(t->Udata.data_tab), "acos") == 0 ){
+			t->func_type = ONP_F_ACOS;
+			t->pcnt = ONP_PCNT_1;
+		};
+		if( strcmp( (char*)(t->Udata.data_tab), "atan") == 0 ){
+			t->func_type = ONP_F_ATAN;
+			t->pcnt = ONP_PCNT_1;
+		};
+		if( strcmp( (char*)(t->Udata.data_tab), "actg") == 0 ){
+			t->func_type = ONP_F_ACTG;
+			t->pcnt = ONP_PCNT_1;
+		};
+		if( strcmp( (char*)(t->Udata.data_tab), "ln") == 0 ){
+			t->func_type = ONP_F_LN;
+			t->pcnt = ONP_PCNT_1;
+		};
+		if( strcmp( (char*)(t->Udata.data_tab), "log") == 0 ){
+			t->func_type = ONP_F_LOG;
+			t->pcnt = ONP_PCNT_1;
+		};
+		if( strcmp( (char*)(t->Udata.data_tab), "lnx") == 0 ){
+			t->func_type = ONP_F_LNX;
+			t->pcnt = ONP_PCNT_2;
+		};
+		
+		if( strcmp( (char*)(t->Udata.data_tab), "int") == 0 ){
+			t->func_type = ONP_F_INT;
+			t->pcnt = ONP_PCNT_3;
+		};
+		if( strcmp( (char*)(t->Udata.data_tab), "der") == 0 ){
+			t->func_type = ONP_F_DER;
+			t->pcnt = ONP_PCNT_3;
+		};
 	};
 };
 
-uint8_t RPN::infix_to_postfix(void)
+void evaluate(array<Token>& tk){
+	Token tmp = tk[0];
+	switch(tmp.func_type){
+		case ONP_F_ACOS:{
+			tk[0].Udata.data_double = acos(tk[1].Udata.data_double);
+			tk[0].content_type = ONP_CT_DOUBLE;
+			tk.remove_last();
+			break;
+		};
+		case ONP_F_ASIN:{
+			tk[0].Udata.data_double = asin(tk[1].Udata.data_double);
+			tk[0].content_type = ONP_CT_DOUBLE;
+			tk.remove_last();
+			break;
+		};
+		case ONP_F_ACTG:{
+			tk[0].Udata.data_double = 1/atan(tk[1].Udata.data_double);
+			tk[0].content_type = ONP_CT_DOUBLE;
+			tk.remove_last();
+			break;
+		};
+		case ONP_F_ATAN:{
+			tk[0].Udata.data_double = atan(tk[1].Udata.data_double);
+			tk[0].content_type = ONP_CT_DOUBLE;
+			tk.remove_last();
+			break;
+		};
+		case ONP_F_SIN:{
+			tk[0].Udata.data_double = sin(tk[1].Udata.data_double);
+			tk[0].content_type = ONP_CT_DOUBLE;
+			tk.remove_last();
+			break;
+		};
+		case ONP_F_COS:{
+			tk[0].Udata.data_double = cos(tk[1].Udata.data_double);
+			tk[0].content_type = ONP_CT_DOUBLE;
+			tk.remove_last();
+			break;
+		};
+		case ONP_F_TAN:{
+			tk[0].Udata.data_double = tan(tk[1].Udata.data_double);
+			tk[0].content_type = ONP_CT_DOUBLE;
+			tk.remove_last();
+			break;
+		};
+		case ONP_F_CTG:{
+			tk[0].Udata.data_double = 1/tan(tk[1].Udata.data_double);
+			tk[0].content_type = ONP_CT_DOUBLE;
+			tk.remove_last();
+			break;
+		};
+		case ONP_F_LN:{
+			tk[0].Udata.data_double = log(tk[1].Udata.data_double);
+			tk[0].content_type = ONP_CT_DOUBLE;
+			tk.remove_last();
+			break;
+		};
+		case ONP_F_LOG:{
+			tk[0].Udata.data_double = log10(tk[1].Udata.data_double);
+			tk[0].content_type = ONP_CT_DOUBLE;
+			tk.remove_last();
+			break;
+		};
+		case ONP_F_ADD:{
+			tk[0].Udata.data_double = (tk[1].Udata.data_double) + (tk[2].Udata.data_double);
+			tk[0].content_type = ONP_CT_DOUBLE;
+			tk.remove_last();
+			tk.remove_last();
+			break;
+		};
+		case ONP_F_SUB:{
+			tk[0].Udata.data_double = (tk[1].Udata.data_double) - (tk[2].Udata.data_double);
+			tk[0].content_type = ONP_CT_DOUBLE;
+			tk.remove_last();
+			tk.remove_last();
+			break;
+		};
+		case ONP_F_POW:{
+			tk[0].Udata.data_double = pow((tk[2].Udata.data_double), (tk[1].Udata.data_double));
+			tk[0].content_type = ONP_CT_DOUBLE;
+			tk.remove_last();
+			tk.remove_last();
+			break;
+		};
+		case ONP_F_MUL:{
+			tk[0].Udata.data_double = (tk[1].Udata.data_double) * (tk[2].Udata.data_double);
+			tk[0].content_type = ONP_CT_DOUBLE;
+			tk.remove_last();
+			tk.remove_last();
+			break;
+		};
+		case ONP_F_DIV:{
+			tk[0].Udata.data_double = (tk[1].Udata.data_double) / (tk[2].Udata.data_double);
+			tk[0].content_type = ONP_CT_DOUBLE;
+			tk.remove_last();
+			tk.remove_last();
+			break;
+		};
+		default:break;
+	};
+};
+
+double RPN::infix_to_postfix(array<uint8_t>& r)
 {
+	tokenizer(r);
+	
 	Token t;
-	array<Token> out(30);
+	array<Token> out(20);
 	array<Token> stack(20);
+	array<Token> eval_stack(10);
 	
 	for( uint8_t i=0; i<tkcnt; i++ ){
 		get_token(&t, i);
@@ -146,8 +314,22 @@ uint8_t RPN::infix_to_postfix(void)
 							stack.remove_last();
 							break;
 						};
-						out.insert( stack.read_last() );
+						eval_stack.insert( stack.read_last() );
 						stack.remove_last();
+						
+						eval_stack.insert( out.read_last() );
+						out.remove_last();
+						
+						eval_stack.insert( out.read_last() );
+						out.remove_last();
+						
+						evaluate(eval_stack);
+						
+						out.insert( eval_stack[0] );
+						
+						while(eval_stack.cnts() > 0 ){
+							eval_stack.remove_last();
+						};
 					};
 				};
 				break;
@@ -162,12 +344,28 @@ uint8_t RPN::infix_to_postfix(void)
 				if( (stack.cnts() == 0)||(stack.read_last().Udata.data_tab[0] == '(' ) ){
 					stack.insert(t);
 				}else{
-					if( t.prior_lvl > stack.read_last().prior_lvl ){
+					if( t.prior_lvl >= stack.read_last().prior_lvl ){
 						stack.insert(t);
 					}else{
 						for( uint8_t i=0; i<30; i++ ){
-							out.insert( stack.read_last() );
+							
+							eval_stack.insert( stack.read_last() );
 							stack.remove_last();
+							
+							eval_stack.insert( out.read_last() );
+							out.remove_last();
+							
+							eval_stack.insert( out.read_last() );
+							out.remove_last();
+							
+							evaluate(eval_stack);
+							
+							out.insert( eval_stack[0] );
+							
+							while(eval_stack.cnts() > 0 ){
+								eval_stack.remove_last();
+							};
+							
 							if( stack.cnts() == 0 )break;
 							if( t.prior_lvl == stack.read_last().prior_lvl )break;
 							if( stack.read_last().Udata.data_tab[0] == '(' )break;
@@ -182,8 +380,23 @@ uint8_t RPN::infix_to_postfix(void)
 	};
 	
 	while( stack.cnts() > 0 ){
-		out.insert( stack.read_last() );
+		eval_stack.insert( stack.read_last() );
 		stack.remove_last();
+		
+		eval_stack.insert( out.read_last() );
+		out.remove_last();
+		
+		eval_stack.insert( out.read_last() );
+		out.remove_last();
+		
+		evaluate(eval_stack);
+		
+		out.insert( eval_stack[0] );
+		
+		while(eval_stack.cnts() > 0 ){
+			eval_stack.remove_last();
+		};
+		
 	};
 	
 	
@@ -191,7 +404,7 @@ uint8_t RPN::infix_to_postfix(void)
 		tokens[i] = out[i];
 	};
 	
-	return 0;
+	return tokens[0].Udata.data_double;
 };
 
 uint8_t RPN::tokenizer(array<uint8_t>& r)

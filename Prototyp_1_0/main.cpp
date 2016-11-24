@@ -129,33 +129,20 @@ int main(void)
 	};
 	
 	/* test test test */
-	char expr[] = "6/(3*2)+4";
+	char expr[] = "3^2+4*4";
+
 	
 	for( uint8_t i=0; i<strlen(expr); i++ ){
 		d.insert(expr[i]);
 	};
 	
-	uint8_t tkcnt = rpn.tokenizer(d);
-	
-	rpn.infix_to_postfix();
-	
 	uint8_t dts[20];
 	
-	Token tok;
+	dtostrf(rpn.infix_to_postfix(d), 5, 5, (char*)(dts) );
 	
-	for( uint8_t i=0; i<tkcnt; i++ ){
-		rpn.get_token(&tok, i);
-		Text.GoTo(0,i);
-		
-		if( tok.content_type == ONP_CT_DOUBLE ){
-			dtostrf(tok.Udata.data_double, 5, 5, (char*)(dts) );
-			Text.Write(dts);
-		}else{
-			Text.Write(tok.Udata.data_tab);
-		};
-		
-		delay(0xFFFFF);
-	};
+	Text.GoTo(0,0);
+	Text.SetSpaces(1);
+	Text.Write(dts);
 	
 	while(1){
 		
