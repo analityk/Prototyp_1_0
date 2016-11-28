@@ -3,6 +3,8 @@
 
 #include <avr/io.h>
 #include <adc.h>
+#include <delay.h>
+#include <keys.h>
 
 class touch{
 private:
@@ -17,6 +19,11 @@ public:
 	void KeyPressed(void);
 	bool Press(void);
 	void ReadCoordinates(void);
+	
+	void delay_keypressed(void);
+
+	uint8_t ReadKey(uint8_t from);
+	void wait_release_key(void);
 	
 	//fuckup - kolizja linii spck z jend¹ z linii adc
 };

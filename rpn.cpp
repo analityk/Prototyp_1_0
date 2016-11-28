@@ -247,14 +247,14 @@ void evaluate(array<Token>& tk){
 			break;
 		};
 		case ONP_F_ADD:{
-			tk[0].Udata.data_double = (tk[1].Udata.data_double) + (tk[2].Udata.data_double);
+			tk[0].Udata.data_double = (tk[2].Udata.data_double) + (tk[1].Udata.data_double);
 			tk[0].content_type = ONP_CT_DOUBLE;
 			tk.remove_last();
 			tk.remove_last();
 			break;
 		};
 		case ONP_F_SUB:{
-			tk[0].Udata.data_double = (tk[1].Udata.data_double) - (tk[2].Udata.data_double);
+			tk[0].Udata.data_double = (tk[2].Udata.data_double) - (tk[1].Udata.data_double);
 			tk[0].content_type = ONP_CT_DOUBLE;
 			tk.remove_last();
 			tk.remove_last();
@@ -268,14 +268,14 @@ void evaluate(array<Token>& tk){
 			break;
 		};
 		case ONP_F_MUL:{
-			tk[0].Udata.data_double = (tk[1].Udata.data_double) * (tk[2].Udata.data_double);
+			tk[0].Udata.data_double = (tk[2].Udata.data_double) * (tk[1].Udata.data_double);
 			tk[0].content_type = ONP_CT_DOUBLE;
 			tk.remove_last();
 			tk.remove_last();
 			break;
 		};
 		case ONP_F_DIV:{
-			tk[0].Udata.data_double = (tk[1].Udata.data_double) / (tk[2].Udata.data_double);
+			tk[0].Udata.data_double = (tk[2].Udata.data_double) / (tk[1].Udata.data_double);
 			tk[0].content_type = ONP_CT_DOUBLE;
 			tk.remove_last();
 			tk.remove_last();
@@ -327,7 +327,8 @@ double RPN::infix_to_postfix(array<uint8_t>& r)
 						
 						out.insert( eval_stack[0] );
 						
-						while(eval_stack.cnts() > 0 ){
+						for( uint8_t j=0; j<40; j++ ){
+							if( eval_stack.cnts() == 0 )break;
 							eval_stack.remove_last();
 						};
 					};
@@ -362,7 +363,8 @@ double RPN::infix_to_postfix(array<uint8_t>& r)
 							
 							out.insert( eval_stack[0] );
 							
-							while(eval_stack.cnts() > 0 ){
+							for( uint8_t j=0; j<40; j++ ){
+								if( eval_stack.cnts() == 0 )break;
 								eval_stack.remove_last();
 							};
 							
@@ -379,7 +381,9 @@ double RPN::infix_to_postfix(array<uint8_t>& r)
 		};
 	};
 	
-	while( stack.cnts() > 0 ){
+	for( uint8_t i=0; i<40; i++ ){
+		if( stack.cnts() == 0 ) break;
+		
 		eval_stack.insert( stack.read_last() );
 		stack.remove_last();
 		
@@ -393,10 +397,10 @@ double RPN::infix_to_postfix(array<uint8_t>& r)
 		
 		out.insert( eval_stack[0] );
 		
-		while(eval_stack.cnts() > 0 ){
+		for( uint8_t j=0; j<40; j++ ){
+			if( stack.cnts() == 0 )break;
 			eval_stack.remove_last();
-		};
-		
+		};			
 	};
 	
 	
@@ -404,19 +408,19 @@ double RPN::infix_to_postfix(array<uint8_t>& r)
 		tokens[i] = out[i];
 	};
 	
+	tkcnt = 0;
+	results = tokens[0].Udata.data_double;
 	return tokens[0].Udata.data_double;
 };
 
 uint8_t RPN::tokenizer(array<uint8_t>& r)
 {
-	if( r.cnts() <= 1 ){
+	if( r.cnts() == 1 ){
 		// only one symbol 
 		if( is_digit(r[0])){
-			double d = 0.0;
-			uint8_t t[5];
-			dtostrf(d, 5, 5, (char*)(t) );
 			tokens[0].content_type = ONP_CT_DOUBLE;
-			tokens[0].Udata.data_double = d;
+			tokens[0].Udata.data_double = atof((char*)(r.data) );
+			tkcnt = 1;
 			return 1;
 		};
 	};

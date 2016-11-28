@@ -8,8 +8,6 @@
 #define NULL 0
 #endif
 
-
-
 #define GLOB_TIMER_TCNT	180		// 180 - 10 ms
 #define GLOB_TIMER_RT	1800	// 1800 - 0,1s
 
@@ -53,14 +51,10 @@ public:
 	void Reset(void);
 	
 	void RegisterCallback(TPcallback callback, uint16_t period);
+	void UnRegisterCallback(void);
 	
 };
 
 extern timer Timer;
-//
-//extern uint8_t volatile Hours;
-//extern uint8_t volatile Minutes;
-//extern uint8_t volatile Seconds;
-//extern uint8_t volatile DeciSeconds;
 
 #endif // timer_h__

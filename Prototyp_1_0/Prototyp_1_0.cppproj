@@ -189,6 +189,10 @@
       <SubType>compile</SubType>
       <Link>delay.cpp</Link>
     </Compile>
+    <Compile Include="..\keys.cpp">
+      <SubType>compile</SubType>
+      <Link>keys.cpp</Link>
+    </Compile>
     <Compile Include="..\lcd.cpp">
       <SubType>compile</SubType>
       <Link>lcd.cpp</Link>
@@ -196,6 +200,10 @@
     <Compile Include="..\MainViev.cpp">
       <SubType>compile</SubType>
       <Link>MainViev.cpp</Link>
+    </Compile>
+    <Compile Include="..\main_loop.cpp">
+      <SubType>compile</SubType>
+      <Link>main_loop.cpp</Link>
     </Compile>
     <Compile Include="..\rpn.cpp">
       <SubType>compile</SubType>

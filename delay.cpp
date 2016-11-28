@@ -4,6 +4,10 @@ uint16_t volatile time_now;
 
 uint8_t nested = 0;
 
+void delay(uint32_t volatile t){
+	while(t--){};
+};
+
 void delay_ms(uint8_t ms)
 {
 	TCCR0B = (1<<CS02)|(0<<CS01)|(1<<CS00);

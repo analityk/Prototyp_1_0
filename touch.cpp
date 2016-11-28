@@ -24,6 +24,12 @@ uint16_t touch::rescale_y(uint16_t y)
 	return (uint16_t)(dy);
 }
 
+void touch::wait_release_key(void)
+{
+	Touch.delay_keypressed();
+	delay(0x10000);
+};
+
 void touch::KeyPressed(void)
 {
 	while( ( Adc.current_X() + Adc.current_Y() ) < 0x0500 ){};
@@ -64,6 +70,19 @@ void touch::ReadCoordinates(void)
 	y = rescale_y(avy);
 	x = rescale_x(avx);
 	
+};
+
+void touch::delay_keypressed(void)
+{
+	while( !Touch.Press() ){};
+};
+
+uint8_t touch::ReadKey(uint8_t from)
+{
+	Touch.ReadCoordinates();
+	uint8_t r = touched( Touch.x/4, Touch.y/4, from );
+	wait_release_key();
+	return r;
 };
 
 touch Touch;

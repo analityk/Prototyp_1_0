@@ -56,6 +56,15 @@ void timer::RegisterCallback(TPcallback callback, uint16_t period)
 	callbacks = callback;
 	periods = period;
 	cnts_period = period;
+	Timer.Enable();
+};
+
+void timer::UnRegisterCallback(void)
+{
+	callbacks = NULL;
+	periods = 0xFFFF;
+	cnts_period = 0xFFFF;
+	Timer.Disable();
 };
 
 timer Timer;
