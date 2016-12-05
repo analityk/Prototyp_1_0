@@ -250,6 +250,16 @@ void RAM::write_block(ram_grip adr, uint16_t offset, uint16_t cnt_to_copy, uint8
 	
 };
 
+double RAM::read_double(ram_grip grip, uint16_t offset)
+{
+	union{
+		uint8_t t[4];
+		double d;
+	}u_cast;
+	read_block(grip, offset, 4, u_cast.t);
+	return u_cast.d;
+};
+
 void RAM::WriteByte(ram_grip adr, uint8_t data)
 {
 	DDRD = 0xFF;

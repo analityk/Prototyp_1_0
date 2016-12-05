@@ -1,12 +1,63 @@
 ﻿#include <MainViev.h>
 
-void mainViev::Draw(void)
+void format_onp_results(char* d){
+	if( d[7] == '+' ){
+		d[6] = 'E';
+		d[7] = d[9];
+		d[8] = d[10];
+		d[9] = 0;
+		d[10] = 0;
+	}else{
+		d[6] = 'e';
+		d[7] = d[9];
+		d[8] = d[10];
+		d[9] = 0;
+		d[10] = 0;
+	};
+};
+
+void mainViev::Draw( array<Cell>& r )
 {
-	// znaki, litery, cyfry
+	
+	for( uint8_t i=0; i<2; i++ ){
+		for( uint8_t j=0; j<2; j++ ){
+			
+			uint8_t addr = (column+j)*10 + (line+i);
+			
+			double d;
+			
+			uint8_t dts[20];
+			
+			cells[addr].GetViev((char*)(dts));
+			
+			if( dts[0] == '\'' ){
+				dts[8] = 0;
+				dts[0] = ' ';
+				
+				for( uint8_t i=strlen((char*)(dts)); i<8; i++ ){
+					dts[i] = ' ';
+				};
+				
+			}else{
+				if( !(dts[0] == 0) ){
+					cells[addr].GetResult(&d);
+				}else{
+					d = 0;
+				};
+				
+				dtostre(d, (char*)(dts), 3, 1 );
+				format_onp_results( (char*)(dts) );
+				
+			};
+			
+			Text.GoTo( 2+(10*j), 2+(i*3) );
+			Text.SetSpaces(1);
+			Text.Write(dts);
+		};
+	};
 	
 	Text.SetSpaces(1);
 	Text.GoTo(0,0);
-	
 	
 	Text.Write("\x88 \x81                \x80 ");
 	

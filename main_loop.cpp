@@ -4,8 +4,7 @@ Program_state _ps_act = 0;
 Program_state _ps_prev = 0;
 Program_state _ps_next = 0;
 
-array< ram_grip > cells_mem(CELLS_CNT);
-array< uint8_t > inp_str(RAM_SIZE_ALLOC);
+array< uint8_t > inp_str(CELL_SIZE_EXPR);
 
 typedef union {
 	uint8_t t[4];
@@ -18,90 +17,17 @@ uint8_t cord[5];
 char time_str[9];
 
 uint8_t TextBoxWindow[20];
-uint8_t ram_buffer[RAM_SIZE_INPUT];
+uint8_t ram_buffer[CELL_SIZE_EXPR];
 
-uint8_t cells_col_offset;
-uint8_t cells_line_offset;
+uint8_t cell_number;
+
+uint8_t mem_ref_col;
+uint8_t mem_ref_lin;
+
+uint8_t ref_adr_col = 255;
+uint8_t ref_adr_lin = 255;
 
 uint8_t ram_cells_addr;
-
-void fill_cells(void){
-	for( uint8_t i=0; i<2; i++ ){
-		for( uint8_t j=0; j<2; j++ ){
-			// a1
-			union {
-				uint8_t t[4];
-				double d;
-			}Ucast;
-			
-			ram_cells_addr = (MainViev.ActColumn()+j)*10 + (MainViev.ActLine()+i);
-			ram.read_block( cells_mem[ram_cells_addr], 0, 1, Ucast.t );
-			
-			uint8_t dts[20];
-			
-			if( Ucast.t[0] == '\'' ){
-				ram.read_block( cells_mem[ram_cells_addr], 1, 8, dts );
-				dts[8] = 0;
-				for( uint8_t i=strlen((char*)(dts)); i<8; i++ ){
-					dts[i] = ' ';
-				};
-				}else{
-				if( !(Ucast.t[0] == 0) ){
-					ram.read_block( cells_mem[ram_cells_addr], RAM_SIZE_INPUT+1, RAM_SIZE_RESULT, Ucast.t );
-					}else{
-					Ucast.d = 0.0;
-				};
-				
-				dtostre(Ucast.d, (char*)(dts), 3, 1 );
-				format_onp_results( (char*)(dts) );
-				
-			};
-			
-			Text.GoTo( 2+(10*j), 2+(i*3) );
-			Text.SetSpaces(1);
-			Text.Write(dts);
-		};
-	};
-};
-
-void format_onp_results(char* d){
-	if( d[7] == '+' ){
-		d[6] = 'E';
-		d[7] = d[9];
-		d[8] = d[10];
-		d[9] = 0;
-		d[10] = 0;
-		}else{
-		d[6] = 'e';
-		d[7] = d[9];
-		d[8] = d[10];
-		d[9] = 0;
-		d[10] = 0;
-	};
-};
-
-void clr_ram_mem(void){
-	for( uint8_t i=0; i<CELLS_CNT; i++ ){
-		
-		cells_mem[i] = ram.get_mem(RAM_SIZE_ALLOC);
-		
-		ram.write_block( cells_mem[i], 0, RAM_SIZE_ALLOC, inp_str.data );
-		
-		if( cells_mem[i] == 0 ){
-			Text.GoTo(0,0);
-			Text.SetSpaces(1);
-			Text.Write(" ramm alloc error ");
-			
-			uint8_t asd[20];
-			itoa(i, (char*)(asd), 10);
-			Text.GoTo(0,1);
-			Text.Write(asd);
-
-			Touch.ReadCoordinates();
-			Touch.wait_release_key();
-		};
-	};
-};
 
 void clr_inp_str(void)
 {
@@ -120,6 +46,12 @@ void clr_ram_buf(void)
 	for( uint8_t i=0; i<RAM_SIZE_INPUT; i++  ){
 		ram_buffer[i] = 0;
 	};
+};
+
+void clr_ref_addr(void)
+{
+	ref_adr_col = 255;
+	ref_adr_lin = 255;
 };
 
 void supply_wait(void)__attribute__((naked)) __attribute__((section(".init0")));
@@ -190,8 +122,8 @@ void set_active_cells(uint8_t button)
 		case 203:{ a=1; b=1; break; };
 		default:break;
 	};
-	cells_col_offset = MainViev.ActColumn()+a;
-	cells_line_offset = MainViev.ActLine()+b;
+	
+	cell_number = ( MainViev.ActColumn() + a )*10 + ( MainViev.ActLine() + b );
 };
 
 void main_viev_action(uint8_t r)
@@ -215,27 +147,41 @@ void main_viev_action(uint8_t r)
 		};
 		case 200: case 201: case 202: case 203:
 		{
+			set_active_cells(r);
 			_ps_act = PS_TEXT_EDIT;
 			_ps_prev = PS_MAIN_VIEV;
-			set_active_cells(r);
 			break;
 		};
 		
 		default:break;
 	};
 	
-	MainViev.Draw();
-	Touch.wait_release_key();
+	MainViev.Draw( cells );
+	Touch.delay_keypressed();
 };
 
-void print_edit_addr(void)
+void print_edit_addr(uint8_t x, uint8_t y)
 {
-	Text.GoTo(12,0);
+	Text.GoTo(x++, y);
 	Text.Write('#');
-	Text.GoTo(13, 0);
-	Text.Write(cells_col_offset+65);
-	Text.GoTo(14, 0);
-	Text.Write(cells_line_offset+49);
+	Text.GoTo(x++, y);
+	uint8_t a = (cell_number/10);
+	uint8_t b = cell_number - (10*a);
+	Text.Write(  a + 65 );
+	Text.GoTo(x++, y);
+	Text.Write( b + 49 );
+};
+
+void print_ref_addr(uint8_t x, uint8_t y)
+{
+	if( !(ref_adr_col == 255) ){
+		Text.GoTo(x++, y);
+		Text.Write('#');
+		Text.GoTo(x++, y);
+		Text.Write(ref_adr_col+65);
+		Text.GoTo(x++, y);
+		Text.Write(ref_adr_lin+49);
+	};
 };
 
 void clr_scr(void)
@@ -246,14 +192,8 @@ void clr_scr(void)
 
 void loadCellString(void)
 {
-	inp_str.erase();
-	ram_cells_addr = cells_col_offset*10 + cells_line_offset;
-	ram.read_block( cells_mem[ram_cells_addr], 0, RAM_SIZE_INPUT, ram_buffer );
-	
-	for( uint8_t i=0; i<RAM_SIZE_INPUT; i++ ){
-		if( ram_buffer[i] == 0 )break;
-		inp_str.insert(ram_buffer[i]);
-	};
+	cells[cell_number].GetExpression( inp_str );
+
 };
 
 void up_case_action(uint8_t r)
@@ -265,7 +205,7 @@ void up_case_action(uint8_t r)
 				
 				if( TextBoxViev.keycode == 2 ){
 					TextBoxViev.SmalChars();
-					}else{
+				}else{
 					TextBoxViev.BigChars();
 				};
 				
@@ -328,9 +268,8 @@ void calculate(void)
 
 void storeCellString(void)
 {
-	ram_cells_addr = cells_col_offset*10 + cells_line_offset;
-	ram.write_block( cells_mem[ram_cells_addr], 0, RAM_SIZE_INPUT, inp_str.data );
-	ram.write_block( cells_mem[ram_cells_addr], RAM_SIZE_INPUT+1, RAM_SIZE_RESULT, ucast.t );
+	cells[cell_number].SaveExpression(inp_str);
+	cells[cell_number].SaveResult(&ucast.d);
 };
 
 void show_input_cnts(void)
@@ -370,5 +309,31 @@ void write_input_str(void)
 	Text.SetSpaces(1);
 	
 	Text.Write(TextBoxWindow);
+};
+
+void store_act_addr(void)
+{
+	mem_ref_col = cell_number / 10;
+	mem_ref_lin = cell_number - mem_ref_col;
+};
+
+void load_act_addr(void)
+{
+	cell_number = mem_ref_col*10 + mem_ref_lin;
+};
+
+void add_ref_addr(void)
+{
+	store_act_addr();
+	inp_str.insert('#');
+	inp_str.insert(cell_number);
+};
+
+void show_gctor(uint16_t t)
+{
+	Text.GoTo(5,0);
+	char c[11];
+	itoa(t,c,10);
+	Text.Write(c);
 };
 

@@ -185,6 +185,10 @@
       <SubType>compile</SubType>
       <Link>at45db321.cpp</Link>
     </Compile>
+    <Compile Include="..\cell.cpp">
+      <SubType>compile</SubType>
+      <Link>cell.cpp</Link>
+    </Compile>
     <Compile Include="..\delay.cpp">
       <SubType>compile</SubType>
       <Link>delay.cpp</Link>

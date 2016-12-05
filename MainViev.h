@@ -2,8 +2,11 @@
 #define MainViev_h__
 
 #include <avr/io.h>
+#include <string.h>
 #include <lcd.h>
 #include <text.h>
+#include <array.h>
+#include <cell.h>
 
 #define LINE_CNT_MAX	7
 #define COLUMN_CNT_MAX	8
@@ -18,7 +21,7 @@ public:
 	
 	mainViev():column(0), line(0),keycode(1){};
 	
-	void Draw(void);
+	void Draw( array<Cell>& r );
 	
 	void DecLine(void);
 	void IncLine(void);

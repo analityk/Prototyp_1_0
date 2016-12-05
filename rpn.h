@@ -4,8 +4,12 @@
 #include <avr/io.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sram.h>
 #include <math.h>
 #include <array.h>
+
+#include <delay.h>
+#include <text.h>
 
 
 #define ONP_CT_UNDEF	0
@@ -22,6 +26,7 @@
 #define ONP_ST_AZ		4
 #define ONP_ST_az		5
 #define ONP_ST_BRACKET	6
+#define ONP_ST_REF		7
 
 #define ONP_PL_BRACKET	0
 #define ONP_PL_ADD	1
@@ -63,6 +68,7 @@ public:
 		uint8_t data_tab[4];
 		double data_double;
 	}Udata;
+	
 	uint8_t content_type;
 	uint8_t prior_lvl;
 	uint8_t func_type;
@@ -92,6 +98,7 @@ public:
 class RPN{
 	private:
 		void set_priority(Token* t);
+		double get_from_ram(array<ram_grip>& rf, uint8_t addr);
 		uint8_t tkcnt;
 public:
 	double results;

@@ -119,6 +119,8 @@ public:
 	
 	void write_block(ram_grip adr, uint16_t offset, uint16_t cnt_to_copy, uint8_t* from);
 	
+	double read_double(ram_grip grip, uint16_t offset);
+	
 };
 
 extern RAM ram;

@@ -19,9 +19,9 @@ int main(void)
 	_ps_prev = PS_MAIN_VIEV;
 	
 	clr_txt_box();
-	clr_inp_str();	
-	clr_ram_mem();
+	clr_inp_str();
 	clr_ram_buf();
+	clr_ref_addr();
 	
 	while(1){
 	
@@ -30,13 +30,12 @@ int main(void)
 			
 			Timer.RegisterCallback( print_time, 10 );
 			
-			MainViev.Draw();
-			
-			fill_cells();
+			MainViev.Draw( cells );
 			
 			main_viev_action( Touch.ReadKey( MainViev.keycode ) );
 			
 			Timer.UnRegisterCallback();
+			
 		};
 		
 		// after push cell
@@ -52,7 +51,10 @@ int main(void)
 			TextBoxViev.Draw();
 			
 			// print adres of editing cell
-			print_edit_addr();
+			print_edit_addr(12, 0);
+			print_ref_addr(8, 0);
+			
+			clr_ref_addr();
 			
 			loadCellString();
 			
@@ -86,20 +88,48 @@ int main(void)
 			
 			clr_scr();
 			
-			MainViev.Draw();
-			
-			_ps_act = PS_MAIN_VIEV;
-			_ps_prev = PS_MAIN_VIEV;
+			MainViev.Draw( cells );
 			
 			Touch.delay_keypressed();
 			
 			Timer.Disable();
+			
+			_ps_act = PS_MAIN_VIEV;
+			_ps_prev = PS_MAIN_VIEV;
 		};
 		
 		// after push addr
 		if( (_ps_act == PS_TEXT_EDIT) && (_ps_prev == PS_TEXT_EDIT_ADDR) ){
+			// pokazaæ main view
+			Timer.RegisterCallback( print_time, 10 );
+			
+			clr_scr();
+			
+			uint8_t r = 0;
+			
+			store_act_addr();
+			
+			do{
+				
+				MainViev.Draw( cells );
+			
+				r = Touch.ReadKey( MainViev.keycode );
+				
+				main_viev_action( r );
+				
+				print_edit_addr(8, 0);
+				
+			}while(r <= 199);
+			
+			add_ref_addr();
+			
+			load_act_addr();
+			
+			storeCellString();
+			
+			Timer.UnRegisterCallback();
 			_ps_act = PS_TEXT_EDIT;
-			_ps_prev = PS_TEXT_SMALL;
+			_ps_prev = PS_MAIN_VIEV;
 		};
 		
 		if( (_ps_act == PS_TEXT_EDIT) && (_ps_prev == PS_TEXT_REFRESH) ){
@@ -110,11 +140,11 @@ int main(void)
 			
 			write_input_str();
 			
+			Timer.Enable();
 			_ps_act = PS_TEXT_EDIT;
 			_ps_prev = PS_TEXT_SMALL;
-			
-			Timer.Enable();
 		};
+		
 		//
 		// after push coursor move
 		if( (_ps_act == PS_TEXT_EDIT) && (_ps_prev == PS_TEXT_EDIT_COURSOR_MOVE) ){

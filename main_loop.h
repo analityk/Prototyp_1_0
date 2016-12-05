@@ -4,6 +4,7 @@
 #include <avr/io.h>
 #include <lcd.h>
 #include <array.h>
+#include <cell.h>
 #include <delay.h>
 #include <timer.h>
 #include <sram.h>
@@ -33,11 +34,11 @@ void clr_ram_mem(void);
 void clr_inp_str(void);
 void clr_txt_box(void);
 void clr_ram_buf(void);
+void clr_ref_addr(void);
+
 void clr_scr(void);
 
 void fill_cells(void);
-
-void format_onp_results(char* d);
 
 void FormatTime( uint8_t h, uint8_t m, uint8_t s );
 void print_time(void);
@@ -49,12 +50,19 @@ void up_case_action(uint8_t r);
 
 void calculate(void);
 
-void print_edit_addr(void);
+void print_edit_addr(uint8_t x, uint8_t y);
+void print_ref_addr(uint8_t x, uint8_t y);
+
 void loadCellString(void);
 void storeCellString(void);
 
 void show_input_cnts(void);
+void show_gctor(uint16_t t);
 
 void write_input_str(void);
+
+void store_act_addr(void);
+void load_act_addr(void);
+void add_ref_addr(void);
 
 #endif // main_loop_h__

@@ -13,6 +13,13 @@ bool is_operator(uint8_t d){
 	return false;
 };
 
+bool is_ref(uint8_t d){
+	if( d == '#' ){
+		return true;
+	};
+	return false;
+};
+
 bool is_digit(uint8_t d){
 	if( (d>47)&&(d<58) ){
 		return true;
@@ -73,6 +80,11 @@ uint8_t sym_type(uint8_t r){
 	if( is_az(r) ){
 		return ONP_ST_az;
 	};
+	
+	if( is_ref(r) ){
+		return ONP_ST_REF;
+	};
+	
 	return 0;
 };
 
@@ -403,7 +415,6 @@ double RPN::infix_to_postfix(array<uint8_t>& r)
 		};			
 	};
 	
-	
 	for( uint8_t i=0; i<tkcnt; i++ ){
 		tokens[i] = out[i];
 	};
@@ -484,6 +495,15 @@ uint8_t RPN::tokenizer(array<uint8_t>& r)
 				tokcnt++;
 			};
 		};
+		
+		if( a == ONP_ST_REF ){
+			//uint8_t addr = ((r[i+1]-65)*10) +  (r[i+2]-49);
+			//
+			//tokens[tokcnt].Udata.data_double = ram.read_double();
+			//
+			//tokcnt++;
+			//i += 2;
+		};
 			
 	};
 	this->tkcnt = tokcnt;
@@ -494,5 +514,6 @@ void RPN::get_token(Token* t, uint8_t i)
 {
 	*t = tokens[i];
 };
+
 
 RPN rpn;

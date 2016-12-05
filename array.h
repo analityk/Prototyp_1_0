@@ -3,6 +3,8 @@
 
 #include <avr/io.h>
 #include <stdlib.h>
+#include <lcd.h>
+#include <delay.h>
 
 template < class T > class array{
 private:
@@ -15,8 +17,12 @@ public:
 	
 	array(uint8_t tsize){
 		data = (T*)malloc(sizeof(T)*tsize);
-		for(uint8_t i=0; i<tsize; i++){
-			data[i] = T();
+		if( data == NULL){
+			while(1){};
+		};
+		
+		for(uint8_t r=0; r<tsize; r++){
+			data[r] = T();
 		};
 		rozm = tsize;
 		poz = 0;
@@ -27,8 +33,9 @@ public:
 	~array(){
 		poz = 0;
 		rozm = 0;
-		for(uint8_t i=0; i<rozm; i++){
-			data[i].T::~T();
+		
+		for(uint8_t volatile k=0; k<rozm; k++){
+			data[k].T::~T();
 		};
 		free(data);
 	};
@@ -108,4 +115,6 @@ public:
 };
 
 
-#endif // array_h__
+#endif // array_h__ 
+
+
