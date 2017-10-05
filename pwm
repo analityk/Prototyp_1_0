@@ -1,0 +1,52 @@
+#include <avr/io.h>
+#include <avr/interrupt.h>
+
+uint16_t volatile width = 320;
+
+void delay(uint32_t volatile t){
+	while(t--){};
+};
+
+uint16_t adc_read(void){
+	ADMUX = 0;
+	ADCSRA |= (1<<ADSC);
+	while( ADCSRA & (1 << ADSC )){};
+	uint8_t lsb = ADCL;
+	uint8_t msb = ADCH;
+	uint16_t t = lsb + (msb<<8);
+	return t;
+};
+
+int main(void)
+{
+	DDRB = (1<<PINB1);
+	
+	TCCR1A = (1<<COM1A1)|(0<<COM1A0)|(0<<COM1B1)|(0<<COM1B0)|(1<<WGM11);
+	TCCR1B = (1<<WGM13)|(1<<CS10);
+	
+	TCNT1 = 0x00F0;
+	
+	ICR1 = 400; // top / duty
+	
+	OCR1A = 150; // compare / 
+	
+	PRR = 0;
+	ADCSRA = (1<<ADEN)|(1<<ADPS2)|(1<<ADPS1)|(1<<ADPS0);
+	ADMUX = 1;
+	
+	PORTD = 0xFF;
+	DDRD = 0xFF;
+	
+    while (1) 
+    {
+		uint16_t t = adc_read();
+		
+		double d = t / 4.267;
+		
+		if( d <= 4 ){
+			d = 0.0;
+		}
+		
+		OCR1A = (uint16_t)d;
+    };
+};
