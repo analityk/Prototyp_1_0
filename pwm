@@ -50,3 +50,153 @@ int main(void)
 		OCR1A = (uint16_t)d;
     };
 };
+
+
+/**
+ * \file
+ *
+ * \brief Empty user application template
+ *
+ */
+
+#include <asf.h>
+#include <stdlib.h>
+
+uint8_t volatile ps = 0;
+uint8_t volatile ptc = 0;
+
+uint32_t volatile avg_duty[64];
+uint32_t volatile avg_freq[64];
+
+uint8_t volatile i_duty = 0;
+uint8_t volatile i_freq = 0;
+
+uint32_t volatile freq = 4096;
+uint32_t volatile duty = 4096;
+
+double duty_max = 0.6;
+
+ISR( TC0_Handler ){
+	uint32_t volatile tc0_isr = REG_TC0_SR0;
+	UNUSED(tc0_isr);
+	
+	freq = 0;
+	for( uint8_t i=0; i<64; i++){
+		freq += avg_freq[i];
+	};
+	
+	freq /= 64;
+	
+	if( freq < 40 ){
+		freq = 40;
+	};
+	
+	if( freq < 1000 ){
+		REG_TC0_RC0 = (42000000.0 / ( 0.5 * freq));
+	}else{
+		REG_TC0_RC0 = (42000000.0 / ( 500 + (6.5 * (freq-1000))));
+	};
+	
+	duty = 0;
+	for( uint8_t i=0; i<64; i++){
+		duty += avg_duty[i];
+	};
+	
+	duty /= 64;
+	
+	if( duty < 100 ){
+		pio_set_input(PIOB, PIO_PB25, PIO_OUTPUT_0);
+		pio_clear(PIOB, PIO_PB25);
+	}else{
+		pio_set_peripheral(PIOB, PIO_PERIPH_B, PIO_PB25);
+		REG_TC0_RA0 = REG_TC0_RC0 * duty_max * (duty / 4096.0);
+		REG_TC0_RB0 = REG_TC0_RA0 / 2;
+	}
+	
+};
+
+
+ISR( ADC_Handler ){
+	uint32_t volatile adc_isr = REG_ADC_ISR;
+	UNUSED(adc_isr);	
+	
+	if( ps == 1){
+		avg_duty[i_duty] = adc_get_channel_value(ADC, ADC_CHANNEL_14);
+		i_duty++;
+		if( i_duty > 64 ){
+			i_duty = 0;
+		};
+		
+		REG_ADC_CHER = (1 << ADC_CHANNEL_13);
+		REG_ADC_IER = (1<<ADC_CHANNEL_13);
+		ps = 0;
+	}else{
+		avg_freq[i_freq] = adc_get_channel_value(ADC, ADC_CHANNEL_13);
+		i_freq++;
+		if( i_freq > 64 ){
+			i_freq = 0;
+		};
+		
+		REG_ADC_CHER = (1 << ADC_CHANNEL_14);
+		REG_ADC_IER = (1<<ADC_CHANNEL_14);
+		
+		ps = 1;
+	};
+};
+
+
+int main (void)
+{
+	/* Insert system clock initialization code here (sysclk_init()). */
+	sysclk_init();
+	
+	
+	board_init();
+	
+	pmc_enable_periph_clk(ID_PIOA);
+	
+	REG_PIOA_IDR = PIO_PA8;
+	REG_PIOA_PER = PIO_PA8;
+	REG_PIOA_OER = PIO_PA8;
+	
+	pio_set(PIOA, PIO_PA8);
+
+	pmc_enable_periph_clk(ID_PIOB);
+	
+	pio_set_peripheral(PIOB, PIO_PERIPH_B, PIO_PB25);
+	
+	pmc_enable_periph_clk( ID_TC0 );
+	
+	REG_TC0_WPMR = 0x54494D00;
+	REG_TC0_CCR0 = (TC_CCR_SWTRG)|(TC_CCR_CLKEN);
+	REG_TC0_CMR0 = (TC_CMR_WAVE)|(TC_CMR_ACPA_CLEAR)|(TC_CMR_ACPC_SET)|(TC_CMR_WAVSEL_UP_RC);
+	REG_TC0_RC0 = 4096;
+	REG_TC0_RA0 = 2100;
+	
+	REG_TC0_IER0 = (1<<4);
+	
+	// config adc - free run mode, interrupt on adc conversion completed, chanel 14,
+	pmc_enable_periph_clk( ID_ADC );
+	
+	REG_ADC_WPMR = 0x41444300;
+	REG_ADC_MR = (ADC_MR_TRGEN_DIS)|(ADC_MR_LOWRES_BITS_12)|(ADC_MR_SLEEP_NORMAL)|(ADC_MR_FWUP_OFF)|(ADC_MR_FREERUN_ON)\
+	|(ADC_MR_PRESCAL(49))|(ADC_MR_STARTUP_SUT80)|(ADC_MR_SETTLING_AST5)|(ADC_MR_ANACH_NONE)|(ADC_MR_TRACKTIM(8))\
+	|(ADC_MR_TRANSFER(1))|(ADC_MR_USEQ_NUM_ORDER);
+	REG_ADC_CHER = (1 << ADC_CHANNEL_13);
+	REG_ADC_IER = (1<<ADC_CHANNEL_13);
+	REG_ADC_EMR = 0;
+	REG_ADC_CGR = 0;
+	REG_ADC_COR = 0;
+	
+	irq_initialize_vectors();
+	
+	irq_register_handler( ADC_IRQn, 3 );	// reading analog input
+	irq_register_handler( TC0_IRQn, 2 );
+	
+	Enable_global_interrupt();
+	
+	while(1){
+			
+	};
+	
+}
