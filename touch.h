@@ -5,6 +5,7 @@
 #include <adc.h>
 #include <delay.h>
 #include <keys.h>
+#include <timer.h>
 
 class touch{
 private:

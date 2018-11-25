@@ -73,7 +73,7 @@ void mainViev::Draw( array<Cell>& r )
 	Text.Write( (char)(line+50) );
 
 	Text.GoTo(0,7);
-	Text.Write("\x89");
+	Text.Write("\x89   OPCJE ");
 	
 	// wykropkowanie poziome
 	for( uint8_t k=0; k<8; k+=3	){

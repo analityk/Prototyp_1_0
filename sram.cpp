@@ -244,10 +244,38 @@ void RAM::write_block(ram_grip adr, uint16_t offset, uint16_t cnt_to_copy, uint8
 			SET_CE_2;
 			
 			asm volatile("nop");
-			DATA_PORT = from[i];			
+			DATA_PORT = from[i];
 	};
 	RAM_STANDBY;
+};
+
+void RAM::clr_block(ram_grip adr, uint16_t bytes)
+{
+	setBank( adr / GRIP_FACTOR );
+	_tsRS tmp;
+	get_mem_struct(adr, &tmp);
 	
+	if( tmp.cnt < (bytes) ){
+		offset_error = true;
+		return;
+	};
+	
+	DDRD = 0xFF;
+	for(uint16_t i = 0; i<bytes; i++){
+		
+		uint16_t adres = tmp.start + i;
+		
+		CLR_CE_2;
+		LO_ADDR_PORT = adres;
+		HI_ADDR_PORT = adres>>8;
+		CLR_RW;
+		CLR_CE_1;
+		SET_CE_2;
+		
+		asm volatile("nop");
+		DATA_PORT = 0;
+	};
+	RAM_STANDBY;
 };
 
 double RAM::read_double(ram_grip grip, uint16_t offset)

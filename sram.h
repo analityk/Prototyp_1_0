@@ -9,13 +9,13 @@
 #define SET_RW	{ PORTB |= (1<<RW); }
 #define CLR_RW	{ PORTB &=~(1<<RW); }
 	
-#define CE_1	PB6
-#define SET_CE_1	{ PORTB |= (1<<CE_1); }
-#define CLR_CE_1	{ PORTB &=~(1<<CE_1); }
+#define CE_1	PG1
+#define SET_CE_1	{ PORTG |= (1<<CE_1); }
+#define CLR_CE_1	{ PORTG &=~(1<<CE_1); }
 
-#define CE_2	PB5	
-#define SET_CE_2	{ PORTB |= (1<<CE_2); }
-#define CLR_CE_2	{ PORTB &=~(1<<CE_2); }
+#define CE_2	PG2	
+#define SET_CE_2	{ PORTG |= (1<<CE_2); }
+#define CLR_CE_2	{ PORTG &=~(1<<CE_2); }
 
 #define OE	PB4
 #define SET_OE	{ PORTB |= (1<<OE); }
@@ -118,6 +118,8 @@ public:
 	void read_block(ram_grip adr, uint16_t offset, uint16_t cnt_to_copy, uint8_t* where);
 	
 	void write_block(ram_grip adr, uint16_t offset, uint16_t cnt_to_copy, uint8_t* from);
+	
+	void clr_block(ram_grip adr, uint16_t bytes);
 	
 	double read_double(ram_grip grip, uint16_t offset);
 	

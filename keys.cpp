@@ -18,7 +18,7 @@ uint8_t touched(uint8_t x, uint8_t y, uint8_t caller){
 			break;
 		};
 		
-		case  2:{
+		case 2:{
 			for( uint8_t i=8; i<66; i++){
 				uint8_t min_x = pgm_read_byte( look_up_keys + (i*5) );
 				uint8_t min_y = pgm_read_byte( look_up_keys + (i*5) + 2);

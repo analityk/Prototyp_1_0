@@ -54,18 +54,6 @@ void clr_ref_addr(void)
 	ref_adr_lin = 255;
 };
 
-void supply_wait(void)__attribute__((naked)) __attribute__((section(".init0")));
-void supply_wait(){
-	PORTG =1;
-	DDRG  =1;
-};
-
-void retclk(void) __attribute__((naked)) __attribute__((section(".fini0")));
-void retclk(void){
-	CLKPR = 0x80;
-	CLKPR = 0x88;
-};
-
 void convert(uint16_t t){
 	uint16_t a = t;
 	uint16_t div = 1000;
@@ -105,7 +93,6 @@ void FormatTime( uint8_t h, uint8_t m, uint8_t s ){
 void print_time(void){
 	FormatTime( Timer.Hours, Timer.Minutes, Timer.Seconds );
 	Text.GoTo(13,7);
-	Text.SetSpaces(1);
 	Text.SetSpaces(1);
 	Text.Write(time_str);
 	Text.GoTo(13,7);

@@ -1,8 +1,28 @@
 ﻿#include <timer.h>
 
 ISR(TIMER3_OVF_vect){
-TCNT3 = 0xFFFF - GLOB_TIMER_RT;
+
+	if(Timer.sloclk == 0){
+		TCNT3 = 0xFFFF - 1800;
+	};
+	
 	Timer.DeciSeconds++;
+	Timer.IdleTime++;
+	
+	if(Timer.IdleTime > 200){
+		if(Timer.sloclk == 0){
+			OCR1B += 1;
+			if(OCR1B > Timer.ocr1b_min){
+				OCR1B = Timer.ocr1b_min;
+			};
+			if(Timer.IdleTime > 600){
+				PORTF &=~(1<<PINF7);
+			};
+		};
+	}else{
+		OCR1B = Timer.ocr1b_full;
+		PORTF |= (1<<PINF7);
+	};
 	
 	if( Timer.DeciSeconds == 10 ){
 		Timer.DeciSeconds = 0;
@@ -22,12 +42,9 @@ TCNT3 = 0xFFFF - GLOB_TIMER_RT;
 	if( Timer.Hours == 24 ){
 		Timer.Hours = 0;
 	};
-	
 };
 
 ISR(TIMER1_OVF_vect){
-	TCNT1 = 0xFFFF-GLOB_TIMER_TCNT;
-	
 	Timer.periods--;
 	if( Timer.periods == 0 ){
 		Timer.periods = Timer.cnts_period;
@@ -35,6 +52,28 @@ ISR(TIMER1_OVF_vect){
 	};
 };
 
+
+void timer::HaltTimer(void)
+{
+	TCNT1 = 0;
+	TCNT3 = 0xFFFF - 500;
+};	
+
+void timer::ResumeTimer(void)
+{
+	TCNT1 = 0;
+	TCNT3 = 0;
+};
+
+void timer::SlowClk(void)
+{
+	Timer.sloclk = 1;
+}
+
+void timer::FastClk(void)
+{
+	Timer.sloclk = 0;
+};
 
 void timer::Enable(void)
 {
@@ -44,11 +83,6 @@ void timer::Enable(void)
 void timer::Disable(void)
 {
 	TIMSK1 &=~(1<<TOIE1);
-};
-
-void timer::Reset(void)
-{
-	TCNT1 = 0xFFFF-GLOB_TIMER_TCNT;
 };
 
 void timer::RegisterCallback(TPcallback callback, uint16_t period)

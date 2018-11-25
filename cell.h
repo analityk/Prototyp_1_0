@@ -15,31 +15,19 @@
 
 #define CELL_START_REF		55
 #define CELL_SIZE_REF		30
-#define CELL_SIZE_ALLOC		(CELL_SIZE_EXPR+CELL_SIZE_REF+CELL_SIZE_RESULT)
+#define CELL_SIZE_ALLOC		(CELL_SIZE_EXPR + CELL_SIZE_REF + CELL_SIZE_RESULT)
 
 class Cell{
-private:
-	ram_grip grip;
-	
 public:
-	
+	ram_grip grip;
 	Cell(){
-		array<uint8_t> tmp(CELL_SIZE_ALLOC);
-		tmp.erase();
 		grip = ram.get_mem(CELL_SIZE_ALLOC);
-		ram.write_block(grip, 0, CELL_SIZE_ALLOC, tmp.data);
-				
+		
 		if( grip == 0 ){
-			Text.GoTo(5, 5);
-			char c[5];
-			itoa(grip, c, 10);
-			Text.Write(c);
-			Text.GoTo(0,0);
-			Text.Write("External ram error with grip n.");
-			Text.GoTo(0,1);
-			Text.Write(grip);
 			while(1){};
 		};
+		
+		ram.clr_block(grip, CELL_SIZE_ALLOC);
 	};
 	
 	~Cell(){};

@@ -6,15 +6,51 @@
  */ 
 
 #include <main_loop.h>
+#include <exmem.h>
+#include <avr/power.h>
 
 void dummy_function(void){
 	return;
 };
 
+uint8_t gcord[5];
+
+void gconvert(uint16_t t){
+	uint16_t a = t;
+	uint16_t div = 1000;
+	for(uint8_t i=4; i>0; i--){
+		gcord[i-1] = a / div;
+		a -= (gcord[i-1] * div);
+		gcord[i-1] += 48;
+		div /= 10;
+	};
+	
+	uint8_t tmp = gcord[0];
+	gcord[0] = gcord[3];
+	gcord[3] = tmp;
+	
+	tmp = gcord[2];
+	gcord[2] = gcord[1];
+	gcord[1] = tmp;
+	
+	
+	gcord[4] = 0;
+};
+
+void supply_wait(void)__attribute__((naked)) __attribute__((section(".init0")));
+void supply_wait(){
+	DDRF |= (1<<PINF7);
+	PORTF |= (1<<PINF7);
+	CLKPR = 0x80;
+	CLKPR = 0;
+};
+
 int main(void)
 {	
 	sei();
-
+	
+	DDRB |=(1<<PINB6);
+	
 	_ps_act = PS_MAIN_VIEV;
 	_ps_prev = PS_MAIN_VIEV;
 	
@@ -36,7 +72,7 @@ int main(void)
 			
 			Timer.UnRegisterCallback();
 			
-		};
+		}; 
 		
 		// after push cell
 		if( (_ps_act == PS_TEXT_EDIT) && (_ps_prev == PS_MAIN_VIEV) ){
@@ -145,7 +181,6 @@ int main(void)
 			_ps_prev = PS_TEXT_SMALL;
 		};
 		
-		//
 		// after push coursor move
 		if( (_ps_act == PS_TEXT_EDIT) && (_ps_prev == PS_TEXT_EDIT_COURSOR_MOVE) ){
 			_ps_act = PS_TEXT_EDIT;

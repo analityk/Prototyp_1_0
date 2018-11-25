@@ -29,8 +29,8 @@ void delay_us(uint8_t us)
 };
 
 //ISR(TIMER0_OVF_vect){
-	//TCNT0 = 5;
-	//time_now++;
+//TCNT0 = 5;
+//time_now++;
 //};
 
 uint16_t Millis(void)
@@ -47,7 +47,7 @@ uint8_t startMillis(void)
 	time_now = 0;
 	TIMSK0 |= (1<<TOIE0);
 	
-return 0;
+	return 0;
 };
 
 
@@ -56,12 +56,11 @@ uint8_t stopMillis(void)
 {
 	if(nested == 1){
 		nested = 0;
-	}else{
+		}else{
 		return 2;
 	};
 	
 	TIMSK0 &=~(1<<TOIE0);
 	time_now = 0;
-return 0;
+	return 0;
 };
-
