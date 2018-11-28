@@ -14,7 +14,8 @@ typedef void (*TPcallback)(void);
 class timer{
 public:
 
-	uint8_t sloclk;
+	uint8_t slowclk;
+	uint8_t sleep;
 	TPcallback callbacks;
 	uint16_t periods;
 	uint16_t cnts_period;
@@ -31,7 +32,7 @@ public:
 	uint8_t volatile DeciSeconds;
 	uint16_t volatile IdleTime;
 	
-	timer(): sloclk(0), ocr1b_full(70), ocr1b_min(89), icr1(90),
+	timer(): slowclk(0), sleep(0), ocr1b_full(70), ocr1b_min(89), icr1(90),
 	Hours(0), Minutes(0), Seconds(0), DeciSeconds(0), IdleTime(0)
 	{	
 		// timer 1 and callbacks config / 5ms

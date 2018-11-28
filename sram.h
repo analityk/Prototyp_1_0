@@ -10,16 +10,16 @@
 #define CLR_RW	{ PORTB &=~(1<<RW); }
 	
 #define CE_1	PG1
-#define SET_CE_1	{ PORTG |= (1<<CE_1); }
-#define CLR_CE_1	{ PORTG &=~(1<<CE_1); }
+#define SET_CE_1	{ DDRG |=(1<<CE_1); PORTG |= (1<<CE_1); }
+#define CLR_CE_1	{ DDRG |=(1<<CE_1); PORTG &=~(1<<CE_1); }
 
-#define CE_2	PG2	
-#define SET_CE_2	{ PORTG |= (1<<CE_2); }
-#define CLR_CE_2	{ PORTG &=~(1<<CE_2); }
+#define CE_2	PG2
+#define SET_CE_2	{ DDRG |=(1<<CE_2); PORTG |= (1<<CE_2); }
+#define CLR_CE_2	{ DDRG |=(1<<CE_2); PORTG &=~(1<<CE_2); }
 
 #define OE	PB4
-#define SET_OE	{ PORTB |= (1<<OE); }
-#define CLR_OE	{ PORTB &=~(1<<OE); }
+#define SET_OE	{ DDRB |= (1<<OE); PORTB |= (1<<OE); }
+#define CLR_OE	{ DDRB |= (1<<OE); PORTB &=~(1<<OE); }
 	
 #define DATA_PORT	PORTD
 #define DATA_DDR	DDRD

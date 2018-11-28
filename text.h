@@ -15,7 +15,7 @@ class text{
 	uint8_t spaces;
 	uint8_t char_width;
 	
-	void Draw(const char c);
+	void Draw(uint8_t c);
 	
 	public:
 	text(): coursor_x(0), coursor_y(0), spaces(1), char_width(5){

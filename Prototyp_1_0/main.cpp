@@ -6,7 +6,6 @@
  */ 
 
 #include <main_loop.h>
-#include <exmem.h>
 #include <avr/power.h>
 
 void dummy_function(void){
@@ -53,6 +52,48 @@ int main(void)
 	
 	_ps_act = PS_MAIN_VIEV;
 	_ps_prev = PS_MAIN_VIEV;
+	
+	//Text.ClrScr();
+	//Text.SetSpaces(1);
+	//
+	//ram_grip rg = ram.get_mem(10);
+	//
+	//uint8_t tp[10] = "szymon\n";
+	//
+	//ram.write_block(rg, 0, 10, tp);
+	
+	//while(1){
+		
+		//Touch.ReadCoordinates();
+		//Text.ClrScr();
+		//uint8_t ab[10];
+		//
+		//uint8_t tab[10];
+//
+		//ram.read_block(rg, 0, 10, tab);
+		//
+		//
+		//Text.GoTo(0,0);
+		//Text.Write(tab);
+		//Text.GoTo(0,1);
+		//Text.Write("dupa\n");
+		
+		
+		//delay(0xFF);
+		//TextBoxViev.BigChars();
+		//TextBoxViev.Draw();
+		//delay(0xFF);
+		//
+		//gconvert(Touch.x/4);
+		//Text.GoTo(5,0);
+		//Text.Write(gcord);
+		//
+		//gconvert(Touch.y/4);
+		//Text.GoTo(5,1);
+		//Text.Write(gcord);
+		
+		//delay(0x1FFFF);
+	//};
 	
 	clr_txt_box();
 	clr_inp_str();

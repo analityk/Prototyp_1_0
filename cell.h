@@ -21,6 +21,7 @@ class Cell{
 public:
 	ram_grip grip;
 	Cell(){
+
 		grip = ram.get_mem(CELL_SIZE_ALLOC);
 		
 		if( grip == 0 ){

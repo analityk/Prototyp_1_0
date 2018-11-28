@@ -4,20 +4,20 @@
 #include <avr/io.h>
 
 #define RW	PB7
-#define SET_RW	{ PORTB |= (1<<RW); }
-#define CLR_RW	{ PORTB &=~(1<<RW); }
+#define SET_RW	{ DDRB |= (1<<RW); PORTB |= (1<<RW); }
+#define CLR_RW	{ DDRB |= (1<<RW); PORTB &=~(1<<RW); }
 
 #define CE_1	PG1
-#define SET_CE_1	{ PORTG |= (1<<CE_1); }
-#define CLR_CE_1	{ PORTG &=~(1<<CE_1); }
+#define SET_CE_1	{ DDRG |= (1<<CE_1); PORTG |= (1<<CE_1); }
+#define CLR_CE_1	{ DDRG |= (1<<CE_1); PORTG &=~(1<<CE_1); }
 
 #define CE_2	PG2
-#define SET_CE_2	{ PORTG |= (1<<CE_2); }
-#define CLR_CE_2	{ PORTG &=~(1<<CE_2); }
+#define SET_CE_2	{ DDRG |= (1<<CE_2); PORTG |= (1<<CE_2); }
+#define CLR_CE_2	{ DDRG |= (1<<CE_2); PORTG &=~(1<<CE_2); }
 
 #define OE	PB4
-#define SET_OE	{ PORTB |= (1<<OE); }
-#define CLR_OE	{ PORTB &=~(1<<OE); }
+#define SET_OE	{ DDRB |= (1<<OE); PORTB |= (1<<OE); }
+#define CLR_OE	{ DDRB |= (1<<OE); PORTB &=~(1<<OE); }
 
 #define DATA_PORT	PORTD
 #define DATA_DDR	DDRD
@@ -39,6 +39,6 @@
 #define RAM_DISABLE	{ CLR_CE_1; SET_CE_2; SET_OE; SET_RW; }
 #define RAM_READ	{ CLR_CE_1; SET_CE_2; CLR_OE; SET_RW; DATA_PORT_INPUT; }
 #define RAM_WRITE	{ CLR_CE_1; SET_CE_2; SET_OE; CLR_RW; DATA_PORT_OUTPUT;	}
-#define RAM_STANDBY	{ SET_CE_1;	SET_CE_2; SET_OE; SET_RW; DATA_PORT_DISABLE; }
+#define RAM_STANDBY	{ SET_CE_1; }
 
 #endif // exmem_io_h__

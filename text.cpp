@@ -40,9 +40,10 @@ void text::GoToAbs(uint8_t x, uint8_t y)
 	coursor_y = y;
 };
 
-void text::Draw(const char c)
+void text::Draw(uint8_t c)
 {
 	uint8_t z = c-32;
+	
 	for( uint8_t i=0; i<5; i++ ){
 		Lcd_KS0108.WriteData( pgm_read_byte( font5x7 + (z*5) + i ) );
 		coursor_x++;
@@ -55,7 +56,7 @@ void text::Draw(const char c)
 
 void text::Write(const char c)
 {
-	if( (coursor_x + char_width + spaces ) > 127 )return;
+	if( (coursor_x + char_width + spaces ) > 128 )return;
 	Draw(c);
 };
 

@@ -88,6 +88,7 @@ class lcd_KS0108{
 		CLR_LCD_RW;
 		CLR_LCD_EN;
 		CLR_LCD_CS;
+		SET_LCD_RESET;
 		Init();
 	};
 	uint8_t Status(uint8_t controller);

@@ -31,6 +31,7 @@ void Cell::GetExpression(array< uint8_t >& expr)
 	if( expr.size() < CELL_SIZE_EXPR )return;
 	
 	ram.read_block(grip, CELL_START_EXPR, CELL_SIZE_EXPR, expr.data);
+	
 	for( uint8_t i=0; i<CELL_SIZE_EXPR; i++ ){
 		if( !(expr[i] == 0) ){
 			expr.poz++;

@@ -1,27 +1,33 @@
 ﻿#include <timer.h>
 
 ISR(TIMER3_OVF_vect){
-
-	if(Timer.sloclk == 0){
-		TCNT3 = 0xFFFF - 1800;
+	if(Timer.slowclk == 1){
+		Timer.FastClk();
 	};
+	
+	TCNT3 = 0xFFFF - 1800;
 	
 	Timer.DeciSeconds++;
 	Timer.IdleTime++;
 	
-	if(Timer.IdleTime > 200){
-		if(Timer.sloclk == 0){
-			OCR1B += 1;
-			if(OCR1B > Timer.ocr1b_min){
-				OCR1B = Timer.ocr1b_min;
-			};
-			if(Timer.IdleTime > 600){
-				PORTF &=~(1<<PINF7);
-			};
+	if(Timer.IdleTime > 2000){
+		OCR1B = Timer.ocr1b_min;
+		
+		if(Timer.IdleTime > 3000 ){
+			PORTF &=~(1<<PINF7);
+			Timer.sleep = 1;
 		};
+		
+		if(Timer.IdleTime > 500 ){
+			Timer.IdleTime = 0;
+		};
+			
 	}else{
 		OCR1B = Timer.ocr1b_full;
 		PORTF |= (1<<PINF7);
+		Timer.FastClk();
+		Timer.slowclk = 0;
+		Timer.sleep = 0;
 	};
 	
 	if( Timer.DeciSeconds == 10 ){
@@ -42,14 +48,28 @@ ISR(TIMER3_OVF_vect){
 	if( Timer.Hours == 24 ){
 		Timer.Hours = 0;
 	};
+	
+	if(Timer.slowclk == 1 || Timer.sleep == 1){
+		Timer.SlowClk();
+	};
+	
 };
 
 ISR(TIMER1_OVF_vect){
+	if(Timer.slowclk == 1){
+		Timer.FastClk();
+	};
+		
 	Timer.periods--;
 	if( Timer.periods == 0 ){
 		Timer.periods = Timer.cnts_period;
 		Timer.callbacks();
 	};
+	
+	if(Timer.slowclk == 1){
+		Timer.SlowClk();
+	};
+		
 };
 
 
@@ -67,12 +87,39 @@ void timer::ResumeTimer(void)
 
 void timer::SlowClk(void)
 {
-	Timer.sloclk = 1;
-}
+	cli();
+	
+	TCCR1B &=~(1<<CS12);
+	TCCR1B &=~(1<<CS10);
+	TCCR1B |=(1<<CS11);
+	
+	TCCR3B &=~(1<<CS32);
+	TCCR3B &=~(1<<CS30);
+	TCCR3B |=(1<<CS31);
+	
+	Timer.slowclk = 1;
+	CLKPR = 0x80;
+	CLKPR = 0x07;
+	
+	sei();
+};
 
 void timer::FastClk(void)
 {
-	Timer.sloclk = 0;
+	cli();
+	
+	TCCR1B |=(1<<CS12);
+	TCCR1B |=(1<<CS10);
+	TCCR1B &=~(1<<CS11);
+	
+	TCCR3B |=(1<<CS32);
+	TCCR3B |=(1<<CS30);
+	TCCR3B &=~(1<<CS31);
+	
+	CLKPR = 0x80;
+	CLKPR = 0x00;
+	
+	sei();
 };
 
 void timer::Enable(void)

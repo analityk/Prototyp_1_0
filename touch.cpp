@@ -5,7 +5,7 @@ uint16_t touch::rescale_x(uint16_t x)
 	float dx;
 
 	uint16_t medi = 445;
-	float scale = 1.92;
+	float scale = 1.15;
 
 	if( x > medi ){
 		dx = medi + scale*(x-medi);
@@ -19,8 +19,8 @@ uint16_t touch::rescale_y(uint16_t y)
 {
 	float dy;
 
-	uint16_t medi = 540;
-	float scale = 2.65;
+	uint16_t medi = 470;
+	float scale = 1.45;
 
 	if( y > medi ){
 		dy = medi + scale*(y-medi);
@@ -38,12 +38,12 @@ void touch::wait_release_key(void)
 
 void touch::KeyPressed(void)
 {
-	while( ( Adc.current_X() + Adc.current_Y() ) < 0x0520 ){};
+	while( ( Adc.current_X() + Adc.current_Y() ) < 650 ){};
 }
 
 bool touch::Press(void)
 {
-	if( Adc.current_X() + Adc.current_Y() < 0x0520 ){
+	if( Adc.current_X() + Adc.current_Y() < 650 ){
 		return true;
 	};
 return false;
@@ -54,9 +54,7 @@ void touch::ReadCoordinates(void)
 	uint16_t tx[5];
 	uint16_t ty[5];
 	
-	for(uint32_t t=0; t<40; t++){
-		Press();//KeyPressed();
-	};
+	KeyPressed();
 	
 	for(uint8_t i=0; i<5; i++){
 		tx[i] = Adc.voltage_Y();
@@ -86,9 +84,7 @@ void touch::delay_keypressed(void)
 };
 
 uint8_t touch::ReadKey(uint8_t from)
-{
-	delay(0x2fFFFF);
-	
+{	
 	Touch.ReadCoordinates();
 	Timer.IdleTime = 0;
 	uint8_t r = touched( Touch.x/4, Touch.y/4, from );

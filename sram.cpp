@@ -64,25 +64,21 @@ void RAM::clr_err(void)
 
 ram_grip RAM::get_mem(uint16_t cnt_bytes)
 {
-
-	{
-		uint8_t t = 0;
-		for(uint8_t i=0; i<BANKS_CNT; i++){
-			setBank(i);
+	uint8_t t = 0;
+	for(uint8_t i=0; i<BANKS_CNT; i++){
+		setBank(i);
 			
-			if( (mem_size - (size_of_trst * ( (max_tsrs_cnt[_bank] - (GRIP_FACTOR * i) + 1 ))) - all_alloc_mem[_bank]) < cnt_bytes ){
-				t++;
-				continue;
-			}else{
-				break;
-			};
+		if( (mem_size - (size_of_trst * ( (max_tsrs_cnt[_bank] - (GRIP_FACTOR * i) + 1 ))) - all_alloc_mem[_bank]) < cnt_bytes ){
+			t++;
+			continue;
+		}else{
+			break;
+		};
 			
-		};
+	};
 		
-		if( t == BANKS_CNT ){
-			return 0;
-		};
-		
+	if( t == BANKS_CNT ){
+		return 0;
 	};
 			
 	if( max_tsrs_cnt[_bank] == 0 ){
@@ -231,20 +227,24 @@ void RAM::write_block(ram_grip adr, uint16_t offset, uint16_t cnt_to_copy, uint8
 		return;
 	};
 	
+	CLR_CE_2;
+	CLR_CE_1;
+	SET_CE_2;
+	
+	uint16_t adres = tmp.start + offset;
+	
 	DDRD = 0xFF;
 	for(uint16_t i = 0; i<cnt_to_copy; i++){
 		
-		uint16_t adres = tmp.start + offset + i;
-			
-			CLR_CE_2;
-			LO_ADDR_PORT = adres;
-			HI_ADDR_PORT = adres>>8;
-			CLR_RW;
-			CLR_CE_1;
-			SET_CE_2;
-			
-			asm volatile("nop");
-			DATA_PORT = from[i];
+		LO_ADDR_PORT = adres;
+		HI_ADDR_PORT = adres>>8;
+		adres++;
+		
+		CLR_RW;
+		asm volatile("nop");
+		DATA_PORT = from[i];
+		asm volatile("nop");
+		SET_RW;
 	};
 	RAM_STANDBY;
 };
@@ -299,20 +299,26 @@ void RAM::WriteByte(ram_grip adr, uint8_t data)
 	SET_CE_2;
 	
 	asm volatile("nop");
+	
 	DATA_PORT = data;
+		
 	RAM_STANDBY;
 };
 
 uint8_t RAM::ReadByte(ram_grip adr)
 {
 	SET_RW;
+	
 	CLR_OE;
+	
 	CLR_CE_1;
+	
 	SET_CE_2;
 	
 	PORTA = adr;
 	PORTC = (adr >> 8);
 	DDRD = 0;
+	PORTD = 0;
 	
 	asm volatile("nop");
 	

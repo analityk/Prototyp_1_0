@@ -50,10 +50,7 @@ void lcd_KS0108::Init(void)
 	WriteCommand( LCD_ON, 1 );
 	ClrScr();
 	GoToXY(0,0);
-	
-	DDRG |=(1<<PG0);
-	PORTG |=(1<<PG0);
-}
+};
 
 void lcd_KS0108::WriteCommand(uint8_t Command, uint8_t controller)
 {
@@ -70,8 +67,7 @@ void lcd_KS0108::WriteCommand(uint8_t Command, uint8_t controller)
 	SET_LCD_EN;
 	LCD_WAIT;
 	CLR_LCD_EN;
-	CLR_LCD_CS;
-}
+};
 
 void lcd_KS0108::WriteData(uint8_t data)
 {
@@ -100,10 +96,8 @@ void lcd_KS0108::WriteData(uint8_t data)
 	SET_LCD_EN;
 	LCD_WAIT;
 	CLR_LCD_EN;
-	
-	CLR_LCD_CS;
 	axis_x++;
-}
+};
 
 uint8_t lcd_KS0108::ReadData(void)
 {
@@ -122,8 +116,9 @@ uint8_t lcd_KS0108::ReadData(void)
 	SET_LCD_EN;
 	LCD_WAIT;
 	data = LCD_DATA_PIN;
+	CLR_LCD_RW;
+	CLR_LCD_RS;
 	CLR_LCD_EN;
-	CLR_LCD_CS;
 	axis_x++;
 	return data;
 };
@@ -157,6 +152,7 @@ void lcd_KS0108::ClrScr(void)
 		for(uint8_t i = 0; i < 128; i++)
 		WriteData(0x00);
 	};
+	CLR_LCD_CS;
 }
 
 void lcd_KS0108::SetPixel(uint8_t x, uint8_t y)
@@ -187,7 +183,7 @@ void lcd_KS0108::ClrPixel(uint8_t x, uint8_t y)
 	//else
 	tmp &= ~(1 << (y%8));
 	WriteData(tmp);
-}
+};
 
 uint8_t lcd_KS0108::Get_LCD_X(void)
 {
@@ -201,13 +197,11 @@ uint8_t lcd_KS0108::Get_LCD_Y(void)
 
 void lcd_KS0108::LightON(void)
 {
-	PORTG |=(1<<0);
-	DDRG  |=(1<<0);
+	
 };
 
 void lcd_KS0108::LightOFF(void)
 {
-	DDRG  |=(1<<0);
-	PORTG &=~(1<<0);
+
 };
 lcd_KS0108 Lcd_KS0108;
